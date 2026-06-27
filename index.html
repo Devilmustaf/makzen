@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المخازن والفواتير المطور</title>
+    <title>نظام إدارة المخازن والفواتير السحابي المطور</title>
     
+    <!-- إعدادات التثبيت كأيقونة تطبيق للموبايل (PWA Meta Tags) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="المخزن السحابي">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     
+    <!-- ربط الأيقونة العصرية للمخزن -->
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%20%D8%A7%D9%84%D8%B3%D8%AD%D8%A7%D8%A8%D9%8A%22,%22short_name%22:%22%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f4f6f9%22,%22theme_color%22:%22%23198754%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/407/407826.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
 
+    <!-- جلب خط Cairo الاحترافي -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
+    <!-- Bootstrap RTL للموبايل -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     
     <style>
@@ -43,18 +47,33 @@
 </head>
 <body>
 
+    <!-- ================= شاشة تسجيل الدخول المنفصلة ================= -->
     <div id="authZone" class="container">
         <div class="card p-4 shadow-sm bg-white text-center">
             <h3 class="fw-bold text-success mb-3">📦 تسجيل الدخول للمخزن</h3>
-            <p class="text-muted small">أدخل بريدك الإلكتروني لفتح مخزنك الخاص بك بشكل مستقل</p>
+            <p class="text-muted small">سجل دخولك لفتح مخزنك الخاص بك بشكل مستقل</p>
+            
+            <!-- زر الدخول السريع بالجيميل -->
+            <div class="d-grid gap-2 mb-4">
+                <button type="button" id="btnGoogleLogin" class="btn btn-outline-danger fw-bold d-flex align-items-center justify-content-center gap-2 py-2">
+                    <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" width="20" alt="Google">
+                    الدخول السريع بحساب Google (الجيميل)
+                </button>
+            </div>
+
+            <div class="position-relative my-4">
+                <hr>
+                <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">أو بالطريقة العادية</span>
+            </div>
+
             <form id="authForm">
                 <div class="mb-3 text-start">
                     <label class="form-label fw-bold">البريد الإلكتروني</label>
-                    <input type="email" id="authEmail" class="form-control" placeholder="name@example.com" required>
+                    <input type="email" id="authEmail" class="form-control" placeholder="name@example.com">
                 </div>
                 <div class="mb-3 text-start">
                     <label class="form-label fw-bold">كلمة السر</label>
-                    <input type="password" id="authPassword" class="form-control" placeholder="******" required>
+                    <input type="password" id="authPassword" class="form-control" placeholder="******">
                 </div>
                 <div class="d-grid gap-2">
                     <button type="button" id="btnLogin" class="btn btn-success fw-bold">ورود الحساب 🔑</button>
@@ -64,7 +83,9 @@
         </div>
     </div>
 
+    <!-- ================= لوحة التحكم الرئيسية (مخفية حتى تسجيل الدخول) ================= -->
     <div id="mainAppZone" class="container my-4 my-md-5 d-none">
+        <!-- رأس الصفحة الثابت -->
         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 pb-3 border-bottom no-print">
             <div>
                 <h2 class="fw-bold text-success mb-0">📦 نظام إدارة المخزن والفواتير</h2>
@@ -76,9 +97,10 @@
             </div>
         </div>
 
+        <!-- التبويبات -->
         <ul class="nav nav-tabs mb-4 no-print" id="mainTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#productsZone" type="button" role="tab">📦 أصناف المخزن</button>
+                <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#productsZone" type="button" role="tab">📦 أصنف المخزن</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="entities-tab" data-bs-toggle="tab" data-bs-target="#entitiesZone" type="button" role="tab">👥 إدارة الجهات</button>
@@ -90,6 +112,7 @@
 
         <div class="tab-content" id="mainTabsContent">
             
+            <!-- المخزن -->
             <div class="tab-pane fade show active no-print" id="productsZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 bg-white">
                     <h4 class="text-success mb-3 fw-bold">➕ إضافة صنف جديد للمخزن</h4>
@@ -131,6 +154,7 @@
                 </div>
             </div>
 
+            <!-- الجهات -->
             <div class="tab-pane fade no-print" id="entitiesZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 bg-white">
                     <h4 class="text-primary mb-3 fw-bold">👥 إضافة جهة جديدة (مورد / عميل)</h4>
@@ -174,6 +198,7 @@
                 </div>
             </div>
 
+            <!-- الفواتير -->
             <div class="tab-pane fade no-print" id="invoicesZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 border-primary bg-white">
                     <h4 class="text-primary mb-3 fw-bold">1️⃣ إنشاء فاتورة صرف جديدة</h4>
@@ -204,14 +229,16 @@
 
         </div>
 
+        <!-- الطباعة -->
         <div id="invoicePrintArea" class="d-none"></div>
 
     </div>
 
+    <!-- كود المحرك السحابي للفايربيس مع المصادقة وفصل حزم البيانات -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkBFEtRQBub11C7rgbKXqoYses2j7e2Bo",
@@ -226,18 +253,19 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
 
         let currentUser = null;
         let unsubscribeProducts = null, unsubscribeEntities = null, unsubscribeInvoices = null;
 
-        // مراقبة حالة الحساب (هل المستخدم مسجل دخول أم لا)
+        // مراقبة حالة الحساب
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('authZone').classList.add('d-none');
                 document.getElementById('mainAppZone').classList.remove('d-none');
                 document.getElementById('userDisplayEmail').innerText = `حساب: ${user.email}`;
-                startRealtimeSync(); // ابدأ بجلب البيانات الخاصة بهذا المستخدم فقط
+                startRealtimeSync();
             } else {
                 currentUser = null;
                 stopRealtimeSync();
@@ -246,7 +274,18 @@
             }
         });
 
-        // دوال تسجيل الدخول وإنشاء الحساب
+        // ميزة تسجيل الدخول السريع بـ Google (تتناسب مع المتصفحات العادية وشاشات الموبايل)
+        document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
+            try {
+                // نستخدم Redirect لتجنب حظر النوافذ المنبثقة على بعض الهواتف الذكية
+                await signInWithRedirect(auth, googleProvider);
+            } catch (err) { alert("خطأ في تسجيل دخول جوجل: " + err.message); }
+        });
+
+        // فحص النتيجة القادمة من جوجل بعد إعادة التوجيه الفوري
+        getRedirectResult(auth).catch((err) => console.log("Google redirect event:", err));
+
+        // دوال تسجيل الدخول التقليدية
         document.getElementById('btnLogin').addEventListener('click', async () => {
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPassword').value;
@@ -286,7 +325,7 @@
                         <td class="fw-bold text-success">د.ع ${formatMoney(p.quantity * p.price)}</td>
                         <td><button class="btn btn-sm btn-danger fw-bold" onclick="deleteProduct('${docSnap.id}')">❌ حذف</button></td>
                     </tr>`;
-                    selectHtml += `<option value="${docSnap.id}">${p.name} (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>`;
+                    selectHtml += `<option value="${docSnap.id}">${p.name} (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>';`;
                 });
                 document.getElementById('productsTableBody').innerHTML = html;
                 window.cachedProductsSelect = selectHtml;
@@ -372,7 +411,7 @@
             if (unsubscribeInvoices) unsubscribeInvoices();
         }
 
-        // إدراج العمليات مع إرفاق الـ userId بشكل آلي وثابت للتفرقة
+        // إدراء العمليات مع إرفاق الـ userId بشكل آلي وثابت للتفرقة
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await addDoc(collection(db, "products"), {
