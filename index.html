@@ -146,6 +146,7 @@
                                     <th>الاسم</th>
                                     <th>رقم الهاتف</th>
                                     <th>النوع</th>
+                                    <th>إجراءات</th>
                                 </tr>
                             </thead>
                             <tbody id="entitiesTableBody">
@@ -269,18 +270,52 @@
         onSnapshot(entitiesCol, (snapshot) => {
             let html = '';
             let options = '<option value="" disabled selected>-- اختر الجهة --</option>';
-            snapshot.forEach(doc => {
-                const e = doc.data();
+            snapshot.forEach(docSnap => {
+                const e = docSnap.data();
+                const entId = docSnap.id;
                 html += `<tr>
                     <td class="fw-bold text-start">${e.name}</td>
                     <td>${e.phone}</td>
                     <td><span class="badge ${e.type === 'مورد' ? 'bg-info text-dark' : 'bg-warning text-dark'} fw-bold">${e.type}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning fw-bold text-dark px-2" onclick="editEntity('${entId}', '${e.name}', '${e.phone}', '${e.type}')">✏️ تعديل</button>
+                        <button class="btn btn-sm btn-danger fw-bold px-2 ms-1" onclick="deleteEntity('${entId}')">❌ حذف</button>
+                    </td>
                 </tr>`;
-                options += `<option value="${doc.id}">${e.name} (${e.type})</option>`;
+                options += `<option value="${entId}">${e.name} (${e.type})</option>`;
             });
             document.getElementById('entitiesTableBody').innerHTML = html;
             document.getElementById('invEntity').innerHTML = options;
         });
+
+        // دالة تعديل بيانات الجهة سحابياً
+        window.editEntity = async (id, oldName, oldPhone, oldType) => {
+            const newName = prompt("تعديل اسم الجهة:", oldName);
+            if (newName === null || newName.trim() === "") return;
+
+            const newPhone = prompt("تعديل رقم الهاتف:", oldPhone);
+            if (newPhone === null) return;
+
+            const newType = prompt("تعديل النوع (اكتب: عميل أو مورد):", oldType);
+            if (newType !== "عميل" && newType !== "مورد") {
+                alert("يجب كتابة 'عميل' أو 'مورد' فقط لضمان سلامة الفواتير!");
+                return;
+            }
+
+            await updateDoc(doc(db, "entities", id), {
+                name: newName.trim(),
+                phone: newPhone.trim() || '---',
+                type: newType
+            });
+            alert("تم تحديث بيانات الجهة بنجاح سحابياً!");
+        };
+
+        // دالة حذف الجهة
+        window.deleteEntity = async (id) => {
+            if (confirm("هل تريد حذف هذه الجهة نهائياً من القائمة؟")) {
+                await deleteDoc(doc(db, "entities", id));
+            }
+        };
 
         // --- الفواتير ---
         document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
@@ -439,7 +474,7 @@
         };
 
         window.deleteItemFromInvoice = async (invId, itemIndex) => {
-            if (!confirm("هل تريد حذف المادة وإرجاع أعدادها كاملة للمخزن؟")) return;
+            if (!confirm("هل تريد حذف المادة وإرجاع أعدادها كاملة للمخزن?")) return;
 
             const invSnap = await getDoc(doc(db, "invoices", invId));
             const items = invSnap.data().items;
