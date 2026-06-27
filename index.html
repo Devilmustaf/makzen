@@ -238,7 +238,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkBFEtRQBub11C7rgbKXqoYses2j7e2Bo",
@@ -258,13 +258,13 @@
         let currentUser = null;
         let unsubscribeProducts = null, unsubscribeEntities = null, unsubscribeInvoices = null;
 
-        // مراقبة حالة الحساب
+        // مراقبة دقيقة لحالة الحساب (تعمل فورياً بمجرد إتمام تسجيل الدخول في أي وقت)
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('authZone').classList.add('d-none');
                 document.getElementById('mainAppZone').classList.remove('d-none');
-                document.getElementById('userDisplayEmail').innerText = `حساب: ${user.email}`;
+                document.getElementById('userDisplayEmail').innerText = `حساب: ${user.email || user.displayName}`;
                 startRealtimeSync();
             } else {
                 currentUser = null;
@@ -274,16 +274,12 @@
             }
         });
 
-        // ميزة تسجيل الدخول السريع بـ Google (تتناسب مع المتصفحات العادية وشاشات الموبايل)
+        // تم استبدال الطريقة بـ Popup لضمان استقبال النتيجة الفورية بدون تعليق المتصفح
         document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
             try {
-                // نستخدم Redirect لتجنب حظر النوافذ المنبثقة على بعض الهواتف الذكية
-                await signInWithRedirect(auth, googleProvider);
+                await signInWithPopup(auth, googleProvider);
             } catch (err) { alert("خطأ في تسجيل دخول جوجل: " + err.message); }
         });
-
-        // فحص النتيجة القادمة من جوجل بعد إعادة التوجيه الفوري
-        getRedirectResult(auth).catch((err) => console.log("Google redirect event:", err));
 
         // دوال تسجيل الدخول التقليدية
         document.getElementById('btnLogin').addEventListener('click', async () => {
@@ -493,7 +489,7 @@
         };
 
         window.deleteItemFromInvoice = async (invId, itemIndex) => {
-            if (!confirm("إرجاع المواد للمخزن وحذفها من الوصل؟")) return;
+            if (!confirm("إرجاع المواد للمخزن وحذفها من الوصل?")) return;
             const invSnap = await getDoc(doc(db, "invoices", invId));
             const items = invSnap.data().items; const item = items[itemIndex];
             const pSnap = await getDoc(doc(db, "products", item.productId));
