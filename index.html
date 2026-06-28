@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المخازن والفواتير المطور</title>
+    <title>نظام إدارة المخازن والفواتير  المطور</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="المخزن المطور">
+    <meta name="apple-mobile-web-app-title" content="المخزن ">
     <link class="no-print" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     
     <link class="no-print" rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
@@ -29,7 +29,7 @@
         .nav-tabs .nav-link.active { background-color: #fff; color: #198754; border-bottom-color: transparent; }
         .card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         
-        /* تجميل الجداول لتكون متناسقة ومتوسطة الحجم وتناظرية */
+        /* تجميل وتنسيق الجداول لتكون متوسطة الحجم ومتناظرة التوسيط */
         th { 
             background-color: #2b3035 !important; 
             color: #ffffff !important; 
@@ -77,18 +77,33 @@
             margin-top: 5px;
         }
 
+        /* إدارة التنسيق الاحترافي للطباعة الصارمة والمنظمة */
         @media print {
-            body { background-color: #fff !important; font-size: 12px; }
-            .no-print { display: none !important; }
+            body { background-color: #fff !important; color: #000 !important; font-size: 13px; }
+            .no-print, .no-print * { display: none !important; }
             .card { box-shadow: none !important; border: none !important; padding: 0 !important; background: transparent !important; }
             .table-responsive { overflow: visible !important; }
-            th { background-color: #495057 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            td { padding: 6px !important; font-size: 12px; }
+            
+            th { 
+                background-color: #2b3035 !important; 
+                color: #fff !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                text-align: center !important;
+                font-size: 13px !important;
+            }
+            td { 
+                padding: 6px !important; 
+                font-size: 13px !important; 
+                text-align: center !important; 
+                vertical-align: middle !important;
+            }
+            
             .company-section-title { background: #f1f3f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .table-info { background-color: #e8f4fd !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            #mainAppZone { margin: 0 !important; padding: 0 !important; }
-            #stockReportZone { display: block !important; opacity: 1 !important; }
-            #invoicePrintArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: #fff; visibility: visible; }
+            
+            /* تفعيل ظهور نافذة الطباعة المستقلة ومنع تداخلها */
+            #invoicePrintArea { display: block !important; visibility: visible !important; }
         }
     </style>
 </head>
@@ -338,7 +353,7 @@
                 <div class="mb-4 border-bottom pb-3">
                     <div class="row align-items-center">
                         <div class="col-12 col-sm-6 text-center text-sm-start">
-                            <h2 class="report-header-title mb-1">📋 تقرير جرد وتحليل المخزون المطور</h2>
+                            <h2 class="report-header-title mb-1">📋 تقرير جرد وتحليل المخزون السحابي</h2>
                             <p class="text-muted small mb-2 mb-sm-0">نظام إدارة المستودعات والتدقيق البرمجي المتطور</p>
                         </div>
                         <div class="col-12 col-sm-6 text-center text-sm-end">
@@ -370,9 +385,9 @@
 
         </div>
 
-        <div id="invoicePrintArea" class="d-none no-print"></div>
-
     </div>
+
+    <div id="invoicePrintArea" class="d-none"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
@@ -527,7 +542,7 @@
             }
         }
 
-        // محرك توليد وعرض تقارير جرد المواد المنسق هندسياً بالتوسيط والأحجام المعتدلة
+        // محرك توليد وعرض تقارير جرد المواد المجرودة منسقة هندسياً
         window.generateStockReport = () => {
             const filterValue = document.getElementById('reportCompanyFilter').value;
             const container = document.getElementById('stockReportResultsContainer');
@@ -775,7 +790,7 @@
         });
 
         window.deleteProduct = async (id) => { if(confirm("حذف الصنف نهائياً؟")) await deleteDoc(doc(db, "products", id)); };
-        window.deleteEntity = async (id) => { if (confirm("حذف الجهة نهائياً exchange؟")) { await deleteDoc(doc(db, "entities", id)); activeEntityNameForStatement = null; } };
+        window.deleteEntity = async (id) => { if (confirm("حذف الجهة نهائياً؟")) { await deleteDoc(doc(db, "entities", id)); activeEntityNameForStatement = null; } };
 
         window.addItemToInvoice = async (e, invId) => {
             e.preventDefault();
@@ -838,22 +853,92 @@
             try { await updateDoc(doc(db, "invoices", id), { status: newStatus }); } catch (err) { alert("خطأ: " + err.message); }
         };
 
+        // دالة طباعة مخصصة ومحسنة تمنع التداخل مع التقرير المخزني نهائياً
         window.printInvoiceDocument = async (invId) => {
             const invSnap = await getDoc(doc(db, "invoices", invId)); const inv = invSnap.data();
             let rows = ''; let total = 0;
             inv.items.forEach((item, index) => {
                 const sub = item.quantitySpent * item.priceAtTransaction; total += sub;
                 const compStr = item.company ? ` - [${item.company}]` : '';
-                rows += `<tr><td>${index + 1}</td><td style="text-align:right;">📦 ${item.productName}${compStr}</td><td>${item.quantitySpent} قطع</td><td>د.ع ${formatMoney(item.priceAtTransaction)}</td><td class="fw-bold">د.ع ${formatMoney(sub)}</td></tr>`;
+                rows += `<tr>
+                    <td style="width: 50px;">${index + 1}</td>
+                    <td style="text-align: right; font-weight: bold;">📦 ${item.productName}${compStr}</td>
+                    <td style="width: 100px;">${item.quantitySpent} قطع</td>
+                    <td style="width: 140px;">د.ع ${formatMoney(item.priceAtTransaction)}</td>
+                    <td style="width: 180px;" class="fw-bold">د.ع ${formatMoney(sub)}</td>
+                </tr>`;
             });
+
+            // إخفاء الواجهة البرمجية بالكامل عن أجهزة الطباعة لتفادي تداخل التقارير المخزنية
+            document.getElementById('mainAppZone').classList.add('no-print');
+
             document.getElementById('invoicePrintArea').innerHTML = `
-                <div class="row align-items-center mb-4 border-bottom pb-3"><div class="col-6"><h3>وصل صرف مواد رسمي</h3><p>رقم المستند: #${inv.invoiceId}</p></div><div class="col-6 text-end"><h5>مستند مخزني سحابي</h5></div></div>
-                <p><strong>المستلم:</strong> ${inv.entityName} | <strong>العنوان:</strong> ${inv.address}</p>
-                <p><strong>ملاحظات:</strong> ${inv.notes || 'لا يوجد'}</p>
-                <table class="table table-bordered text-center my-4"><thead class="table-light"><tr><th>تسلل</th><th>اسم الصنف (الشركة المصنعة)</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead><tbody>${rows}<tr><td colspan="4" class="text-end">المجموع الكلي:</td><td class="text-success fw-bold">د.ع ${formatMoney(total)}</td></tr></tbody></table>
-                <div class="mt-4 text-center no-print"><button onclick="window.print()" class="btn btn-success px-4 fw-bold">🖨️ بدء الطباعة</button> <button onclick="document.getElementById('invoicePrintArea').classList.add('d-none')" class="btn btn-outline-secondary px-4 fw-bold">🔙 رجوع</button></div>`;
+                <div class="p-4 bg-white" style="direction: rtl; font-family: 'Cairo', sans-serif;">
+                    <div class="row align-items-center mb-4 border-bottom pb-3">
+                        <div class="col-6 text-start">
+                            <h3 class="fw-bold text-dark mb-1">🧾 وصل صرف مواد رسمي</h3>
+                            <p class="mb-0 text-muted">رقم المستند المستندي: <span class="text-danger fw-bold">#${inv.invoiceId}</span></p>
+                            <p class="mb-0 text-muted small">التاريخ والوقت: ${new Date(inv.createdAt || Date.now()).toLocaleString('ar-IQ')}</p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <h4 class="fw-bold text-success mb-1">نظام إدارة المستودعات</h4>
+                            <p class="small text-muted mb-0">تقرير مستندي مؤتمت مستقل</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mb-4 bg-light p-3 rounded border text-start">
+                        <div class="col-12 col-sm-6">📍 <b>الجهة المستلمة:</b> ${inv.entityName}</div>
+                        <div class="col-12 col-sm-6">📌 <b>عنوان التسليم:</b> ${inv.address || 'غير محدد'}</div>
+                        <div class="col-12">📝 <b>ملاحظات المستند:</b> ${inv.notes || 'لا يوجد'}</div>
+                    </div>
+                    
+                    <table class="table table-bordered text-center align-middle my-4 bg-white">
+                        <thead>
+                            <tr>
+                                <th>ت</th>
+                                <th style="text-align: right;">اسم الصنف (الشركة المصنعة)</th>
+                                <th>الكمية</th>
+                                <th>السعر المفرد</th>
+                                <th>المجموع المستحق</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                            <tr class="table-success fw-bold text-dark">
+                                <td colspan="4" class="text-end py-2">المجموع الكلي النهائي للفاتورة:</td>
+                                <td class="text-success text-center fs-5">د.ع ${formatMoney(total)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="row mt-5 pt-3 text-center">
+                        <div class="col-4">
+                            <p class="mb-5 small text-muted">توقيع أمين المستودع</p>
+                            <p class="border-top pt-2 mx-3">__________________</p>
+                        </div>
+                        <div class="col-4">
+                            <p class="mb-5 small text-muted">توقيع المدقق المالي</p>
+                            <p class="border-top pt-2 mx-3">__________________</p>
+                        </div>
+                        <div class="col-4">
+                            <p class="mb-5 small text-muted">توقيع وإستلام المستلم</p>
+                            <p class="border-top pt-2 mx-3">__________________</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 text-center no-print d-flex gap-2 justify-content-center">
+                        <button onclick="window.print()" class="btn btn-success px-5 fw-bold shadow">🖨️ بدء أمر الطباعة الفعلي</button> 
+                        <button onclick="closeInvoicePrintArea()" class="btn btn-outline-secondary px-4 fw-bold">🔙 إغلاق والعودة للنظام</button>
+                    </div>
+                </div>`;
+                
             document.getElementById('invoicePrintArea').classList.remove('d-none');
             window.scrollTo(0, document.body.scrollHeight);
+        };
+
+        window.closeInvoicePrintArea = () => {
+            document.getElementById('invoicePrintArea').classList.add('d-none');
+            document.getElementById('mainAppZone').classList.remove('no-print');
         };
 
         function formatMoney(amount) { return parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'); }
