@@ -5,18 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام إدارة المخازن والفواتير السحابي المطور</title>
     
+    <!-- إعدادات التثبيت كأيقونة تطبيق للموبايل (PWA Meta Tags) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="المخزن السحابي">
     <link class="no-print" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     
+    <!-- ربط الأيقونة العصرية للمخزن -->
     <link class="no-print" rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     <link class="no-print" rel="manifest" href="data:application/manifest+json,{%22name%22:%22%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%20%D8%A7%D9%84%D8%B3%D8%AD%D8%A7%D8%A8%D9%8A%22,%22short_name%22:%22%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f4f6f9%22,%22theme_color%22:%22%23198754%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/407/407826.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
 
+    <!-- جلب خط Cairo الاحترافي -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
+    <!-- Bootstrap RTL للموبايل -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     
     <style>
@@ -43,6 +47,7 @@
 </head>
 <body>
 
+    <!-- ================= شاشة تسجيل الدخول المنفصلة ================= -->
     <div id="authZone" class="container">
         <div class="card p-4 shadow-sm bg-white text-center">
             <h3 class="fw-bold text-success mb-3">📦 تسجيل الدخول للمخزن</h3>
@@ -77,6 +82,7 @@
         </div>
     </div>
 
+    <!-- ================= لوحة التحكم الرئيسية ================= -->
     <div id="mainAppZone" class="container my-4 my-md-5 d-none">
         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 pb-3 border-bottom no-print">
             <div>
@@ -89,20 +95,25 @@
             </div>
         </div>
 
+        <!-- ألسنة التبويبات العلوية -->
         <ul class="nav nav-tabs mb-4 no-print" id="mainTabs" role="tablist">
             <li class="nav-item">
                 <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#productsZone" type="button" role="tab">📦 أصناف المخزن</button>
             </li>
             <li class="nav-item">
+                <button class="nav-link" id="entities-tab" data-bs-toggle="tab" data-bs-target="#entitiesZone" type="button" role="tab">👥 إدارة الجهات (الزبائن)</button>
+            </li>
+            <li class="nav-item">
                 <button class="nav-link" id="invoices-tab" data-bs-toggle="tab" data-bs-target="#invoicesZone" type="button" role="tab">💸 فواتير الصرف الحالية</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" id="entities-tab" data-bs-toggle="tab" data-bs-target="#entitiesZone" type="button" role="tab">👥 كشف حساب الجهات والتدقيق</button>
+                <button class="nav-link text-success border border-success border-bottom-0" id="statement-tab" data-bs-toggle="tab" data-bs-target="#statementZone" type="button" role="tab">📊 كشوفات الحسابات والتدقيق</button>
             </li>
         </ul>
 
         <div class="tab-content" id="mainTabsContent">
             
+            <!-- 1. المخزن -->
             <div class="tab-pane fade show active no-print" id="productsZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 bg-white">
                     <h4 class="text-success mb-3 fw-bold">➕ إضافة صنف جديد للمخزن</h4>
@@ -144,6 +155,51 @@
                 </div>
             </div>
 
+            <!-- 2. إدارة الجهات والزبائن -->
+            <div class="tab-pane fade no-print" id="entitiesZone" role="tabpanel">
+                <div class="card p-3 p-md-4 shadow-sm mb-4 bg-white">
+                    <h4 class="text-primary mb-3 fw-bold">👥 إضافة جهة جديدة (مورد / عميل)</h4>
+                    <form id="entityForm" class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label fw-bold">الاسم الكامل</label>
+                            <input type="text" id="entName" class="form-control" required>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label fw-bold">رقم الهاتف</label>
+                            <input type="text" id="entPhone" class="form-control" placeholder="07XXXXXXXXX">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label fw-bold">نوع الجهة</label>
+                            <select id="entType" class="form-select">
+                                <option value="عميل">عميل</option>
+                                <option value="مورد">مورد</option>
+                            </select>
+                        </div>
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-primary px-4 fw-bold">حفظ الجهة</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card p-3 p-md-4 shadow-sm bg-white">
+                    <h4 class="mb-3 fw-bold">قائمة الجهات والزبائن المسجلة</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>رقم الهاتف</th>
+                                    <th>النوع</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="entitiesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. فواتير الصرف الحالية النشطة -->
             <div class="tab-pane fade no-print" id="invoicesZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 border-primary bg-white">
                     <h4 class="text-primary mb-3 fw-bold">1️⃣ إنشاء فاتورة صرف جديدة</h4>
@@ -168,59 +224,52 @@
                     </form>
                 </div>
 
-                <h4 class="mb-3 text-dark fw-bold">2️⃣ الفاتورة النشطة المفتوحة حالياً لتعبئة المواد</h4>
+                <h4 class="mb-3 text-dark fw-bold">2️⃣ الفاتورة النشطة قيد التعبئة حالياً</h4>
                 <div id="invoicesContainer"></div>
             </div>
 
-            <div class="tab-pane fade no-print" id="entitiesZone" role="tabpanel">
+            <!-- 4. تبويب كشف الحساب والتدقيق (الطلب الجديد والمستقل بالكامل) -->
+            <div class="tab-pane fade no-print" id="statementZone" role="tabpanel">
                 <div class="row">
-                    <div class="col-12 col-md-4">
-                        <div class="card p-3 shadow-sm mb-4 bg-white">
-                            <h5 class="text-primary mb-3 fw-bold">👥 إضافة جهة جديدة</h5>
-                            <form id="entityForm" class="row g-2">
-                                <div class="col-12">
-                                    <input type="text" id="entName" class="form-control form-control-sm" placeholder="الاسم الكامل" required>
-                                </div>
-                                <div class="col-12">
-                                    <input type="text" id="entPhone" class="form-control form-control-sm" placeholder="رقم الهاتف">
-                                </div>
-                                <div class="col-12">
-                                    <select id="entType" class="form-select form-select-sm">
-                                        <option value="عميل">عميل</option>
-                                        <option value="مورد">مورد</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 text-end">
-                                    <button type="submit" class="btn btn-sm btn-primary w-100 fw-bold">حفظ الجهة</button>
-                                </div>
-                            </form>
-                        </div>
-
+                    <!-- القائمة الجانبية لاختيار الزبون -->
+                    <div class="col-12 col-md-4 mb-4">
                         <div class="card p-3 shadow-sm bg-white">
-                            <h5 class="mb-3 fw-bold">قائمة الجهات المسجلة</h5>
-                            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                <table class="table table-sm table-striped table-hover small">
-                                    <thead>
-                                        <tr>
-                                            <th>الاسم</th>
-                                            <th>النوع</th>
-                                            <th>إجراء</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="entitiesTableBody"></tbody>
-                                </table>
+                            <h5 class="fw-bold text-success mb-3">👤 اختر الحساب أو الزبون</h5>
+                            <div class="list-group" id="statementEntitiesList" style="max-height: 450px; overflow-y: auto;">
+                                <!-- يتم تحميل قائمة الأسماء هنا برمجياً -->
                             </div>
                         </div>
                     </div>
 
+                    <!-- شاشة عرض كشف الحساب التابع للاسم المختار -->
                     <div class="col-12 col-md-8">
-                        <div class="card p-3 p-md-4 shadow-sm bg-white border-success">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="text-success fw-bold mb-0">📊 كشف الحساب والتدقيق المستندي</h4>
-                                <span id="selectedAccountName" class="badge bg-success p-2 fs-6">الرجاء اختيار جهة لعرض كشفها</span>
+                        <div class="card p-3 p-md-4 shadow-sm bg-white border border-success">
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-3 pb-2 border-bottom">
+                                <h4 class="text-success fw-bold mb-1">📊 كشف الحساب المستندي للزبون</h4>
+                                <span id="selectedAccountName" class="badge bg-dark fs-6 p-2">الرجاء اختيار زبون من اليمين 👈</span>
                             </div>
+                            
+                            <!-- ملخص مالي للحساب -->
+                            <div id="statementSummaryWidget" class="d-none">
+                                <div class="row g-2 mb-4">
+                                    <div class="col-6">
+                                        <div class="p-3 bg-light rounded text-center border">
+                                            <small class="text-muted d-block fw-bold">عدد الفواتير الكلي</small>
+                                            <span id="widgetInvoiceCount" class="fs-4 fw-bold text-dark">0</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 bg-success-subtle rounded text-center border border-success">
+                                            <small class="text-success d-block fw-bold">إجمالي المبالغ والتعاملات</small>
+                                            <span id="widgetTotalBalance" class="fs-4 fw-bold text-success">د.ع 0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- منطقة عرض فواتير الزبون المختار -->
                             <div id="accountStatementContainer">
-                                <div class="alert alert-secondary text-center">اضغط على اسم العميل أو المورد من القائمة الجانبية لعرض وتدقيق كافة فواتيره السابقة هنا بشكل مستقل وبدون بطء.</div>
+                                <div class="alert alert-secondary text-center py-4">انقر على اسم الزبون أو الجهة من القائمة الجانبية لعرض كشف حسابه الكامل وأرشيف فواتيره السابقة بدقة وسرعة.</div>
                             </div>
                         </div>
                     </div>
@@ -229,10 +278,12 @@
 
         </div>
 
+        <!-- منطقة طباعة الفواتير المستقلة -->
         <div id="invoicePrintArea" class="d-none"></div>
 
     </div>
 
+    <!-- كود المحرك السحابي للفايربيس والمزامنة المزدوجة للفصل بين الفواتير المفتوحة والمؤرشفة -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
@@ -255,6 +306,7 @@
 
         let currentUser = null;
         let unsubscribeProducts = null, unsubscribeEntities = null, unsubscribeInvoices = null;
+        
         let globalInvoicesList = []; 
         let activeEntityNameForStatement = null; 
 
@@ -273,16 +325,15 @@
             }
         });
 
+        // دوال الحسابات والدخول الصريحة
         document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
             try { await signInWithPopup(auth, googleProvider); } catch (err) { alert("خطأ جوجل: " + err.message); }
         });
-
         document.getElementById('btnLogin').addEventListener('click', async () => {
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPassword').value;
             try { await signInWithEmailAndPassword(auth, email, pass); } catch (err) { alert("خطأ: " + err.message); }
         });
-
         document.getElementById('btnRegister').addEventListener('click', async () => {
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPassword').value;
@@ -290,13 +341,13 @@
                 try { await createUserWithEmailAndPassword(auth, email, pass); alert("تم النجاح!"); } catch (err) { alert("خطأ: " + err.message); }
             }
         });
-
         document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
 
+        // دالة المزامنة الحية والربط البرمجي الكامل لحل المشاكل الفهرسية والبطء
         function startRealtimeSync() {
             const uid = currentUser.uid;
 
-            // 1. مزامنة المخزن
+            // 1. مزامنة جرد المخزن المباشر
             const qProd = query(collection(db, "products"), where("userId", "==", uid));
             unsubscribeProducts = onSnapshot(qProd, (snapshot) => {
                 let html = '';
@@ -310,50 +361,67 @@
                         <td class="fw-bold text-success">د.ع ${formatMoney(p.quantity * p.price)}</td>
                         <td><button class="btn btn-sm btn-danger fw-bold" onclick="deleteProduct('${docSnap.id}')">❌ حذف</button></td>
                     </tr>`;
-                    selectHtml += `<option value="${docSnap.id}">${p.name} (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>`;
+                    selectHtml += `<option value="${docSnap.id}">${p.name} (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>';`;
                 });
                 document.getElementById('productsTableBody').innerHTML = html;
                 window.cachedProductsSelect = selectHtml;
                 renderActiveInvoicesAndStatement(); 
             });
 
-            // 2. مزامنة الجهات
+            // 2. مزامنة وإدارة الجهات والزبائن وتوزيعها في شاشة كشف الحساب الجانبية
             const qEnt = query(collection(db, "entities"), where("userId", "==", uid));
             unsubscribeEntities = onSnapshot(qEnt, (snapshot) => {
-                let html = '';
-                let options = '<option value="" disabled selected>-- اختر الجهة --</option>';
+                let tableHtml = '';
+                let selectOptions = '<option value="" disabled selected>-- اختر الجهة --</option>';
+                let sidebarGroupHtml = '';
+
                 snapshot.forEach(docSnap => {
                     const e = docSnap.data();
-                    html += `<tr>
-                        <td class="fw-bold text-start"><a href="#" class="text-decoration-none text-primary" onclick="loadAccountStatement('${e.name.replace(/'/g, "\\'")}')">👤 ${e.name}</a></td>
-                        <td><span class="badge ${e.type === 'مورد' ? 'bg-info text-dark' : 'bg-warning text-dark'} small">${e.type}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-light py-0 text-danger" onclick="deleteEntity('${docSnap.id}')">❌</button>
-                        </td>
+                    const safeName = e.name.replace(/'/g, "\\'");
+                    
+                    // جدول تبويب "إدارة الجهات"
+                    tableHtml += `<tr>
+                        <td class="fw-bold text-start">👤 ${e.name}</td>
+                        <td>${e.phone}</td>
+                        <td><span class="badge ${e.type === 'مورد' ? 'bg-info text-dark' : 'bg-warning text-dark'} fw-bold">${e.type}</span></td>
+                        <td><button class="btn btn-sm btn-danger py-0 fw-bold" onclick="deleteEntity('${docSnap.id}')">❌ حذف</button></td>
                     </tr>`;
-                    options += `<option value="${docSnap.id}">${e.name} (${e.type})</option>`;
+                    
+                    // خيارات الاختيار عند عمل فاتورة صرف جديدة
+                    selectOptions += `<option value="${docSnap.id}">${e.name} (${e.type})</option>`;
+                    
+                    // القائمة الجانبية لتبويب "كشوفات الحسابات والتدقيق" الجديد
+                    const activeClass = (activeEntityNameForStatement === e.name) ? 'active bg-success text-white' : '';
+                    sidebarGroupHtml += `<button type="button" class="list-group-item list-group-item-action fw-bold d-flex justify-content-between align-items-center ${activeClass}" onclick="loadAccountStatement('${safeName}')">
+                        <span>👤 ${e.name}</span>
+                        <span class="badge bg-secondary small rounded-pill">${e.type}</span>
+                    </button>`;
                 });
-                document.getElementById('entitiesTableBody').innerHTML = html;
-                document.getElementById('invEntity').innerHTML = options;
+
+                document.getElementById('entitiesTableBody').innerHTML = tableHtml;
+                document.getElementById('invEntity').innerHTML = selectOptions;
+                document.getElementById('statementEntitiesList').innerHTML = sidebarGroupHtml || '<div class="text-muted text-center p-2 small">لا توجد أسماء مسجلة. قم بإضافة جهة من التبويب الخاص بها أولاً.</div>';
             });
 
-            // 3. مزامنة الفواتير بالكامل برمجياً لحل مشكلة التراكم والـ Index
+            // 3. مزامنة وجلب كافة الفواتير سحابياً وترتيبها برمجياً
             const qInv = query(collection(db, "invoices"), where("userId", "==", uid));
             unsubscribeInvoices = onSnapshot(qInv, (snapshot) => {
                 globalInvoicesList = [];
                 snapshot.forEach(docSnap => {
                     globalInvoicesList.push({ id: docSnap.id, ...docSnap.data() });
                 });
+                // الترتيب البرمجي الثابت لحل مشكلة الفهارس بالكامل
                 globalInvoicesList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                 renderActiveInvoicesAndStatement();
             });
         }
 
-        // دالة موحدة لتوليد واجهة الفواتير النشطة وكشوفات الحساب المنفصلة
+        // المحرك الرئيسي والذكي لفصل وعرض الفواتير الجارية عن كشوفات حساب الزبائن
         function renderActiveInvoicesAndStatement() {
             let activeInvoicesHtml = '';
             let statementHtml = '';
             let totalStatementBalance = 0;
+            let targetAccountInvoiceCount = 0;
 
             globalInvoicesList.forEach(inv => {
                 const invId = inv.id;
@@ -376,18 +444,18 @@
                     });
                 }
 
-                // البناء المشترك للفاتورة كمكون كارد (Card) HTML
-                const invoiceCard = `<div class="card mb-4 border border-secondary bg-white">
+                // هيكلة الكارد المستندي المشترك للفاتورة
+                const invoiceCardHtml = `<div class="card mb-4 border border-secondary bg-white">
                     <div class="card-header bg-dark text-white d-flex flex-column flex-sm-row justify-content-between align-items-sm-center p-3">
-                        <div class="fs-6"><strong>رقم: #${inv.invoiceId}</strong> | <span class="fw-bold">الجهة: ${inv.entityName}</span></div>
+                        <div class="fs-6"><strong>رقم المستند: #${inv.invoiceId}</strong> | <span class="fw-bold">الجهة: ${inv.entityName}</span></div>
                         <div class="mt-2 mt-sm-0 d-flex gap-1 flex-wrap">
                             <span class="badge ${inv.status === 'معتمدة' ? 'bg-success' : 'bg-warning text-dark'} fs-6 align-self-center me-1 fw-bold">${inv.status}</span>
                             ${inv.status === 'مفتوحة' ? 
-                                `<button class="btn btn-sm btn-success fw-bold" onclick="changeInvoiceStatus('${invId}', 'معتمدة')">🔒 اعتماد وإرسال للحساب</button>` : 
-                                `<button class="btn btn-sm btn-secondary fw-bold" onclick="changeInvoiceStatus('${invId}', 'مفتوحة')">🔓 تعديل الفاتورة</button>`
+                                `<button class="btn btn-sm btn-success fw-bold" onclick="changeInvoiceStatus('${invId}', 'معتمدة')">🔒 اعتماد الفاتورة</button>` : 
+                                `<button class="btn btn-sm btn-secondary fw-bold text-white" onclick="changeInvoiceStatus('${invId}', 'مفتوحة')">🔓 فتح للتعديل</button>`
                             }
                             <button class="btn btn-sm btn-info text-dark fw-bold" onclick="printInvoiceDocument('${invId}')">📄 طباعة</button>
-                            <button class="btn btn-sm btn-danger fw-bold" onclick="deleteEntireInvoice('${invId}')">❌ حذف</button>
+                            <button class="btn btn-sm btn-danger fw-bold" onclick="deleteEntireInvoice('${invId}')">❌ حذف كامل</button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -396,7 +464,7 @@
                             <table class="table table-sm table-bordered text-center align-middle mb-0">
                                 <thead class="table-light"><tr><th>اسم المادة</th><th style="width: 100px;">الكمية</th><th style="width: 140px;">السعر</th><th>المجموع</th>${inv.status === 'مفتوحة' ? '<th>إجراء</th>' : ''}</tr></thead>
                                 <tbody>
-                                    ${itemsRows || '<tr><td colspan="5" class="text-muted py-2">لا توجد مواد مدرجة.</td></tr>'}
+                                    ${itemsRows || '<tr><td colspan="5" class="text-muted py-2">لا توجد مواد مدرجة حالياً في هذه الفاتورة.</td></tr>'}
                                     ${totalInvoice > 0 ? `<tr class="table-success fw-bold"><td colspan="3" class="text-end">المجموع الكلي:</td><td colspan="2" class="text-start text-success fs-5">د.ع ${formatMoney(totalInvoice)}</td></tr>` : ''}
                                 </tbody>
                             </table>
@@ -405,30 +473,43 @@
                     </div>
                 </div>`;
 
-                // الفصل الذكي: الفواتير المفتوحة تذهب لتبويب الفواتير الحالي لتعبئتها
+                // الفرز الذكي الأول: تبويب "فواتير الصرف الحالية" لا يظهر إلا الفواتير المفتوحة والنشطة فقط للتعبئة الفورية
                 if (inv.status === 'مفتوحة') {
-                    activeInvoicesHtml += invoiceCard;
+                    activeInvoicesHtml += invoiceCardHtml;
                 }
 
-                // كشف الحساب: إذا كانت الفاتورة تابعة للاسم المختار حالياً تظهر بكشف حسابه المخصص بالكامل
+                // الفرز الذكي الثاني: كشف الحساب المنفصل يقوم بجلب كل تاريخ وفواتير العميل المختار (سواء مفتوحة أو معتمدة) للتدقيق والتعديل
                 if (activeEntityNameForStatement && inv.entityName.includes(activeEntityNameForStatement)) {
-                    statementHtml += invoiceCard;
+                    statementHtml += invoiceCardHtml;
                     totalStatementBalance += totalInvoice;
+                    targetAccountInvoiceCount++;
                 }
             });
 
-            // تعبئة البيانات في الشاشات
-            document.getElementById('invoicesContainer').innerHTML = activeInvoicesHtml || '<div class="alert alert-info text-center fw-bold">لا توجد فاتورة مفتوحة قيد العمل حالياً 👆 اختر جهة وافتح فاتورة جديدة للبدء.</div>';
+            // إسقاط البيانات في حقول الواجهات الرسومية للمستخدم
+            document.getElementById('invoicesContainer').innerHTML = activeInvoicesHtml || '<div class="alert alert-info text-center fw-bold">لا توجد فواتير مفتوحة قيد العمل حالياً 👆 املأ الحقول وافتح فاتورة جديدة لتبدأ بإضافة المواد إليها.</div>';
             
             if (activeEntityNameForStatement) {
                 document.getElementById('selectedAccountName').innerText = `حساب: ${activeEntityNameForStatement}`;
-                const summaryHeader = `<div class="alert alert-success d-flex justify-content-between align-items-center fw-bold mb-4"><span>عدد المستندات: ${statementHtml ? document.createElement('div').innerHTML == statementHtml ? 0 : statementHtml.match(/card mb-4/g).length : 0} فاتورة</span> <span class="fs-5">إجمالي التعاملات الكلي: د.ع ${formatMoney(totalStatementBalance)}</span></div>`;
-                document.getElementById('accountStatementContainer').innerHTML = summaryHeader + (statementHtml || '<div class="alert alert-light text-center">لم يصدر لهذا الحساب أي فواتير بعد.</div>');
+                document.getElementById('statementSummaryWidget').classList.remove('d-none');
+                document.getElementById('widgetInvoiceCount').innerText = targetAccountInvoiceCount;
+                document.getElementById('widgetTotalBalance').innerText = `د.ع ${formatMoney(totalStatementBalance)}`;
+                document.getElementById('accountStatementContainer').innerHTML = statementHtml || '<div class="alert alert-light text-center">لم يصدر لهذا الزبون أي فواتير أو تعاملات سابقة في هذا النظام بعد.</div>';
             }
         }
 
+        // دالة تفعيل كشف حساب العميل وتغيير لونه في القائمة الجانبية
         window.loadAccountStatement = (entityName) => {
             activeEntityNameForStatement = entityName;
+            // تحديث تصميم العناصر النشطة في القائمة
+            const items = document.querySelectorAll('#statementEntitiesList button');
+            items.forEach(btn => {
+                if(btn.innerText.includes(entityName)) {
+                    btn.classList.add('active', 'bg-success', 'text-white');
+                } else {
+                    btn.classList.remove('active', 'bg-success', 'text-white');
+                }
+            });
             renderActiveInvoicesAndStatement();
         };
 
@@ -438,6 +519,7 @@
             if (unsubscribeInvoices) unsubscribeInvoices();
         }
 
+        // معالجة النماذج والإدخالات
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await addDoc(collection(db, "products"), {
@@ -482,11 +564,11 @@
                 });
                 
                 document.getElementById('invoiceForm').reset();
-                alert("تم فتح الفاتورة بنجاح وتثبيتها في الأسفل لإضافة الأصناف 👇");
+                alert("تم فتح الفاتورة بنجاح وثُبتت بالأسفل لتعبئة المواد 💸");
             } catch (err) { alert("خطأ: " + err.message); }
         });
 
-        // بقية العمليات المساعدة
+        // عمليات التعديل، المواد، وحذف المستندات بالكامل مع ضبط توازن المخزن السحابي
         window.deleteProduct = async (id) => { if(confirm("حذف الصنف نهائياً؟")) await deleteDoc(doc(db, "products", id)); };
         window.deleteEntity = async (id) => { if (confirm("حذف الجهة نهائياً؟")) { await deleteDoc(doc(db, "entities", id)); activeEntityNameForStatement = null; } };
 
@@ -497,7 +579,7 @@
             const pSnap = await getDoc(doc(db, "products", pId));
             if (!pSnap.exists()) return;
             const pData = pSnap.data();
-            if (pData.quantity < inputQty) { alert("المخزن لا يكفي!"); return; }
+            if (pData.quantity < inputQty) { alert("الكمية المتوفرة في المخزن لا تكفي!"); return; }
             await updateDoc(doc(db, "products", pId), { quantity: pData.quantity - inputQty });
             const invSnap = await getDoc(doc(db, "invoices", invId));
             const items = invSnap.data().items || [];
@@ -530,7 +612,7 @@
         };
 
         window.deleteEntireInvoice = async (invId) => {
-            if (!confirm("حذف الفاتورة بالكامل وموازنة المخازن؟")) return;
+            if (!confirm("حذف الفاتورة بالكامل وإعادة توازن المواد إلى المخازن؟")) return;
             const invSnap = await getDoc(doc(db, "invoices", invId));
             if (invSnap.exists() && invSnap.data().items) {
                 for (const item of invSnap.data().items) {
