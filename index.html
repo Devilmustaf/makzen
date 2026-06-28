@@ -90,14 +90,14 @@
         </div>
 
         <ul class="nav nav-tabs mb-4 no-print" id="mainTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#productsZone" type="button" role="tab">📦 أصنف المخزن</button>
+            <li class="nav-item">
+                <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#productsZone" type="button" role="tab">📦 أصناف المخزن</button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="entities-tab" data-bs-toggle="tab" data-bs-target="#entitiesZone" type="button" role="tab">👥 إدارة الجهات</button>
+            <li class="nav-item">
+                <button class="nav-link" id="invoices-tab" data-bs-toggle="tab" data-bs-target="#invoicesZone" type="button" role="tab">💸 فواتير الصرف الحالية</button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="invoices-tab" data-bs-toggle="tab" data-bs-target="#invoicesZone" type="button" role="tab">💸 فواتير الصرف</button>
+            <li class="nav-item">
+                <button class="nav-link" id="entities-tab" data-bs-toggle="tab" data-bs-target="#entitiesZone" type="button" role="tab">👥 كشف حساب الجهات والتدقيق</button>
             </li>
         </ul>
 
@@ -144,49 +144,6 @@
                 </div>
             </div>
 
-            <div class="tab-pane fade no-print" id="entitiesZone" role="tabpanel">
-                <div class="card p-3 p-md-4 shadow-sm mb-4 bg-white">
-                    <h4 class="text-primary mb-3 fw-bold">👥 إضافة جهة جديدة (مورد / عميل)</h4>
-                    <form id="entityForm" class="row g-3">
-                        <div class="col-12 col-md-4">
-                            <label class="form-label fw-bold">الاسم الكامل</label>
-                            <input type="text" id="entName" class="form-control" required>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label fw-bold">رقم الهاتف</label>
-                            <input type="text" id="entPhone" class="form-control" placeholder="07XXXXXXXXX">
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label fw-bold">نوع الجهة</label>
-                            <select id="entType" class="form-select">
-                                <option value="عميل">عميل</option>
-                                <option value="مورد">مورد</option>
-                            </select>
-                        </div>
-                        <div class="col-12 text-end">
-                            <button type="submit" class="btn btn-primary px-4 fw-bold">حفظ الجهة</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="card p-3 p-md-4 shadow-sm bg-white">
-                    <h4 class="mb-3 fw-bold">قائمة الجهات المسجلة</h4>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>الاسم</th>
-                                    <th>رقم الهاتف</th>
-                                    <th>النوع</th>
-                                    <th>إجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="entitiesTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
             <div class="tab-pane fade no-print" id="invoicesZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 border-primary bg-white">
                     <h4 class="text-primary mb-3 fw-bold">1️⃣ إنشاء فاتورة صرف جديدة</h4>
@@ -211,8 +168,63 @@
                     </form>
                 </div>
 
-                <h4 class="mb-3 text-dark fw-bold">2️⃣ الفواتير الحالية وخيارات التعديل والحذف الكامل</h4>
+                <h4 class="mb-3 text-dark fw-bold">2️⃣ الفاتورة النشطة المفتوحة حالياً لتعبئة المواد</h4>
                 <div id="invoicesContainer"></div>
+            </div>
+
+            <div class="tab-pane fade no-print" id="entitiesZone" role="tabpanel">
+                <div class="row">
+                    <div class="col-12 col-md-4">
+                        <div class="card p-3 shadow-sm mb-4 bg-white">
+                            <h5 class="text-primary mb-3 fw-bold">👥 إضافة جهة جديدة</h5>
+                            <form id="entityForm" class="row g-2">
+                                <div class="col-12">
+                                    <input type="text" id="entName" class="form-control form-control-sm" placeholder="الاسم الكامل" required>
+                                </div>
+                                <div class="col-12">
+                                    <input type="text" id="entPhone" class="form-control form-control-sm" placeholder="رقم الهاتف">
+                                </div>
+                                <div class="col-12">
+                                    <select id="entType" class="form-select form-select-sm">
+                                        <option value="عميل">عميل</option>
+                                        <option value="مورد">مورد</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 text-end">
+                                    <button type="submit" class="btn btn-sm btn-primary w-100 fw-bold">حفظ الجهة</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="card p-3 shadow-sm bg-white">
+                            <h5 class="mb-3 fw-bold">قائمة الجهات المسجلة</h5>
+                            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-sm table-striped table-hover small">
+                                    <thead>
+                                        <tr>
+                                            <th>الاسم</th>
+                                            <th>النوع</th>
+                                            <th>إجراء</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="entitiesTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-8">
+                        <div class="card p-3 p-md-4 shadow-sm bg-white border-success">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="text-success fw-bold mb-0">📊 كشف الحساب والتدقيق المستندي</h4>
+                                <span id="selectedAccountName" class="badge bg-success p-2 fs-6">الرجاء اختيار جهة لعرض كشفها</span>
+                            </div>
+                            <div id="accountStatementContainer">
+                                <div class="alert alert-secondary text-center">اضغط على اسم العميل أو المورد من القائمة الجانبية لعرض وتدقيق كافة فواتيره السابقة هنا بشكل مستقل وبدون بطء.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -243,8 +255,9 @@
 
         let currentUser = null;
         let unsubscribeProducts = null, unsubscribeEntities = null, unsubscribeInvoices = null;
+        let globalInvoicesList = []; 
+        let activeEntityNameForStatement = null; 
 
-        // مراقبة دقيقة لحالة الحساب
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -260,40 +273,30 @@
             }
         });
 
-        // تسجيل الدخول السريع بـ Google بـ Popup
         document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
-            try {
-                await signInWithPopup(auth, googleProvider);
-            } catch (err) { alert("خطأ في تسجيل دخول جوجل: " + err.message); }
+            try { await signInWithPopup(auth, googleProvider); } catch (err) { alert("خطأ جوجل: " + err.message); }
         });
 
-        // دوال تسجيل الدخول التقليدية
         document.getElementById('btnLogin').addEventListener('click', async () => {
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPassword').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-            } catch (err) { alert("خطأ في تسجيل الدخول: " + err.message); }
+            try { await signInWithEmailAndPassword(auth, email, pass); } catch (err) { alert("خطأ: " + err.message); }
         });
 
         document.getElementById('btnRegister').addEventListener('click', async () => {
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPassword').value;
-            if (confirm("هل تريد إنشاء مستودع سحابي جديد بهذا البريد؟")) {
-                try {
-                    await createUserWithEmailAndPassword(auth, email, pass);
-                    alert("تم إنشاء حسابك ومستودعك الجديد بنجاح!");
-                } catch (err) { alert("خطأ في الإنشاء: " + err.message); }
+            if (confirm("إنشاء مستودع جديد؟")) {
+                try { await createUserWithEmailAndPassword(auth, email, pass); alert("تم النجاح!"); } catch (err) { alert("خطأ: " + err.message); }
             }
         });
 
         document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
 
-        // دالة تصفية وجلب البيانات المخصصة لكل مستخدم بناءً على الـ UID الخاص به
         function startRealtimeSync() {
             const uid = currentUser.uid;
 
-            // 1. مزامنة جرد المخزن
+            // 1. مزامنة المخزن
             const qProd = query(collection(db, "products"), where("userId", "==", uid));
             unsubscribeProducts = onSnapshot(qProd, (snapshot) => {
                 let html = '';
@@ -311,9 +314,10 @@
                 });
                 document.getElementById('productsTableBody').innerHTML = html;
                 window.cachedProductsSelect = selectHtml;
+                renderActiveInvoicesAndStatement(); 
             });
 
-            // 2. مزامنة الجهات والعملاء
+            // 2. مزامنة الجهات
             const qEnt = query(collection(db, "entities"), where("userId", "==", uid));
             unsubscribeEntities = onSnapshot(qEnt, (snapshot) => {
                 let html = '';
@@ -321,12 +325,10 @@
                 snapshot.forEach(docSnap => {
                     const e = docSnap.data();
                     html += `<tr>
-                        <td class="fw-bold text-start">${e.name}</td>
-                        <td>${e.phone}</td>
-                        <td><span class="badge ${e.type === 'مورد' ? 'bg-info text-dark' : 'bg-warning text-dark'} fw-bold">${e.type}</span></td>
+                        <td class="fw-bold text-start"><a href="#" class="text-decoration-none text-primary" onclick="loadAccountStatement('${e.name.replace(/'/g, "\\'")}')">👤 ${e.name}</a></td>
+                        <td><span class="badge ${e.type === 'مورد' ? 'bg-info text-dark' : 'bg-warning text-dark'} small">${e.type}</span></td>
                         <td>
-                            <button class="btn btn-sm btn-warning fw-bold text-dark px-2" onclick="editEntity('${docSnap.id}', '${e.name}', '${e.phone}', '${e.type}')">✏️</button>
-                            <button class="btn btn-sm btn-danger fw-bold px-2 ms-1" onclick="deleteEntity('${docSnap.id}')">❌</button>
+                            <button class="btn btn-sm btn-light py-0 text-danger" onclick="deleteEntity('${docSnap.id}')">❌</button>
                         </td>
                     </tr>`;
                     options += `<option value="${docSnap.id}">${e.name} (${e.type})</option>`;
@@ -335,71 +337,100 @@
                 document.getElementById('invEntity').innerHTML = options;
             });
 
-            // 3. تم تعديل الاستعلام هنا ليتجنب الترتيب السيرفري (orderBy) لمنع مشكلة الـ Index المفقود تماماً
+            // 3. مزامنة الفواتير بالكامل برمجياً لحل مشكلة التراكم والـ Index
             const qInv = query(collection(db, "invoices"), where("userId", "==", uid));
             unsubscribeInvoices = onSnapshot(qInv, (snapshot) => {
-                let html = '';
-                let invoicesList = [];
-                
+                globalInvoicesList = [];
                 snapshot.forEach(docSnap => {
-                    invoicesList.push({ id: docSnap.id, ...docSnap.data() });
+                    globalInvoicesList.push({ id: docSnap.id, ...docSnap.data() });
                 });
-
-                // ترتيب الفواتير برمجياً من الأحدث للأقدم بناءً على وقت الإنشاء لحل المشكلة نهائياً
-                invoicesList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-                invoicesList.forEach(inv => {
-                    const invId = inv.id;
-                    let itemsRows = ''; let totalInvoice = 0;
-
-                    if (inv.items && Array.isArray(inv.items)) {
-                        inv.items.forEach((item, index) => {
-                            const subtotal = item.quantitySpent * item.priceAtTransaction;
-                            totalInvoice += subtotal;
-                            itemsRows += `<tr>
-                                <td class="text-start fw-bold">📦 ${item.productName}</td>
-                                <td><input type="number" id="qty-${invId}-${index}" value="${item.quantitySpent}" class="form-control form-control-sm text-center fw-bold" min="1" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
-                                <td><input type="number" id="price-${invId}-${index}" value="${item.priceAtTransaction}" class="form-control form-control-sm text-center" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
-                                <td class="fw-bold text-dark">د.ع ${formatMoney(subtotal)}</td>
-                                ${inv.status === 'مفتوحة' ? `<td>
-                                    <button class="btn btn-sm btn-success py-0 px-2" onclick="saveItemChanges('${invId}', ${index})">💾</button>
-                                    <button class="btn btn-sm btn-danger py-0 px-2" onclick="deleteItemFromInvoice('${invId}', ${index})">❌</button>
-                                </td>` : ''}
-                            </tr>`;
-                        });
-                    }
-
-                    html += `<div class="card mb-4 border border-secondary bg-white">
-                        <div class="card-header bg-dark text-white d-flex flex-column flex-sm-row justify-content-between align-items-sm-center p-3">
-                            <div class="fs-6"><strong>رقم: #${inv.invoiceId}</strong> | <span class="fw-bold">الجهة: ${inv.entityName}</span></div>
-                            <div class="mt-2 mt-sm-0 d-flex gap-1 flex-wrap">
-                                <span class="badge ${inv.status === 'معتمدة' ? 'bg-success' : 'bg-warning text-dark'} fs-6 align-self-center me-1 fw-bold">${inv.status}</span>
-                                ${inv.status === 'مفتوحة' ? 
-                                    `<button class="btn btn-sm btn-success fw-bold" onclick="changeInvoiceStatus('${invId}', 'معتمدة')">🔒 اعتماد</button>` : 
-                                    `<button class="btn btn-sm btn-secondary fw-bold" onclick="changeInvoiceStatus('${invId}', 'مفتوحة')">🔓 فتح</button>`
-                                }
-                                <button class="btn btn-sm btn-info text-dark fw-bold" onclick="printInvoiceDocument('${invId}')">📄 طباعة</button>
-                                <button class="btn btn-sm btn-danger fw-bold" onclick="deleteEntireInvoice('${invId}')">❌ حذف</button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            ${inv.status === 'مفتوحة' ? `<form onsubmit="addItemToInvoice(event, '${invId}')" class="row g-2 align-items-end mb-3 p-2 bg-light rounded"><div class="col-12 col-sm-6"><select id="addProd-${invId}" class="form-select form-select-sm" required>${window.cachedProductsSelect || ''}</select></div><div class="col-8 col-sm-4"><input type="number" id="addQty-${invId}" class="form-control form-control-sm" placeholder="الكمية" min="1" required></div><div class="col-4 col-sm-2"><button type="submit" class="btn btn-sm btn-secondary w-100 fw-bold">➕</button></div></form>` : ''}
-                            <div class="table-responsive">
-                                <table class="table table-sm table-bordered text-center align-middle mb-0">
-                                    <thead class="table-light"><tr><th>اسم المادة</th><th style="width: 100px;">الكمية</th><th style="width: 140px;">السعر</th><th>المجموع</th>${inv.status === 'مفتوحة' ? '<th>إجراء</th>' : ''}</tr></thead>
-                                    <tbody>
-                                        ${itemsRows || '<tr><td colspan="5" class="text-muted py-2">لا توجد مواد مدرجة حالياً. الرجاء إضافة مادة من القائمة أعلاه 👆</td></tr>'}
-                                        ${totalInvoice > 0 ? `<tr class="table-success fw-bold"><td colspan="3" class="text-end">المجموع الكلي:</td><td colspan="2" class="text-start text-success fs-5">د.ع ${formatMoney(totalInvoice)}</td></tr>` : ''}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="mt-2 text-muted small">📍 <b>العنوان:</b> ${inv.address || 'غير محدد'} | 📝 <b>ملاحظات:</b> ${inv.notes || 'لا يوجد'}</div>
-                        </div>
-                    </div>`;
-                });
-                document.getElementById('invoicesContainer').innerHTML = html || '<div class="alert alert-info text-center">لا توجد فواتير مفتوحة حالياً. أنشئ فاتورة جديدة للبدء.</div>';
+                globalInvoicesList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderActiveInvoicesAndStatement();
             });
         }
+
+        // دالة موحدة لتوليد واجهة الفواتير النشطة وكشوفات الحساب المنفصلة
+        function renderActiveInvoicesAndStatement() {
+            let activeInvoicesHtml = '';
+            let statementHtml = '';
+            let totalStatementBalance = 0;
+
+            globalInvoicesList.forEach(inv => {
+                const invId = inv.id;
+                let itemsRows = ''; let totalInvoice = 0;
+
+                if (inv.items && Array.isArray(inv.items)) {
+                    inv.items.forEach((item, index) => {
+                        const subtotal = item.quantitySpent * item.priceAtTransaction;
+                        totalInvoice += subtotal;
+                        itemsRows += `<tr>
+                            <td class="text-start fw-bold">📦 ${item.productName}</td>
+                            <td><input type="number" id="qty-${invId}-${index}" value="${item.quantitySpent}" class="form-control form-control-sm text-center fw-bold" min="1" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
+                            <td><input type="number" id="price-${invId}-${index}" value="${item.priceAtTransaction}" class="form-control form-control-sm text-center" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
+                            <td class="fw-bold text-dark">د.ع ${formatMoney(subtotal)}</td>
+                            ${inv.status === 'مفتوحة' ? `<td>
+                                <button class="btn btn-sm btn-success py-0 px-2" onclick="saveItemChanges('${invId}', ${index})">💾</button>
+                                <button class="btn btn-sm btn-danger py-0 px-2" onclick="deleteItemFromInvoice('${invId}', ${index})">❌</button>
+                            </td>` : ''}
+                        </tr>`;
+                    });
+                }
+
+                // البناء المشترك للفاتورة كمكون كارد (Card) HTML
+                const invoiceCard = `<div class="card mb-4 border border-secondary bg-white">
+                    <div class="card-header bg-dark text-white d-flex flex-column flex-sm-row justify-content-between align-items-sm-center p-3">
+                        <div class="fs-6"><strong>رقم: #${inv.invoiceId}</strong> | <span class="fw-bold">الجهة: ${inv.entityName}</span></div>
+                        <div class="mt-2 mt-sm-0 d-flex gap-1 flex-wrap">
+                            <span class="badge ${inv.status === 'معتمدة' ? 'bg-success' : 'bg-warning text-dark'} fs-6 align-self-center me-1 fw-bold">${inv.status}</span>
+                            ${inv.status === 'مفتوحة' ? 
+                                `<button class="btn btn-sm btn-success fw-bold" onclick="changeInvoiceStatus('${invId}', 'معتمدة')">🔒 اعتماد وإرسال للحساب</button>` : 
+                                `<button class="btn btn-sm btn-secondary fw-bold" onclick="changeInvoiceStatus('${invId}', 'مفتوحة')">🔓 تعديل الفاتورة</button>`
+                            }
+                            <button class="btn btn-sm btn-info text-dark fw-bold" onclick="printInvoiceDocument('${invId}')">📄 طباعة</button>
+                            <button class="btn btn-sm btn-danger fw-bold" onclick="deleteEntireInvoice('${invId}')">❌ حذف</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        ${inv.status === 'مفتوحة' ? `<form onsubmit="addItemToInvoice(event, '${invId}')" class="row g-2 align-items-end mb-3 p-2 bg-light rounded"><div class="col-12 col-sm-6"><select id="addProd-${invId}" class="form-select form-select-sm" required>${window.cachedProductsSelect || ''}</select></div><div class="col-8 col-sm-4"><input type="number" id="addQty-${invId}" class="form-control form-control-sm" placeholder="الكمية" min="1" required></div><div class="col-4 col-sm-2"><button type="submit" class="btn btn-sm btn-secondary w-100 fw-bold">➕</button></div></form>` : ''}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered text-center align-middle mb-0">
+                                <thead class="table-light"><tr><th>اسم المادة</th><th style="width: 100px;">الكمية</th><th style="width: 140px;">السعر</th><th>المجموع</th>${inv.status === 'مفتوحة' ? '<th>إجراء</th>' : ''}</tr></thead>
+                                <tbody>
+                                    ${itemsRows || '<tr><td colspan="5" class="text-muted py-2">لا توجد مواد مدرجة.</td></tr>'}
+                                    ${totalInvoice > 0 ? `<tr class="table-success fw-bold"><td colspan="3" class="text-end">المجموع الكلي:</td><td colspan="2" class="text-start text-success fs-5">د.ع ${formatMoney(totalInvoice)}</td></tr>` : ''}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-2 text-muted small">📍 <b>العنوان:</b> ${inv.address || 'غير محدد'} | 📝 <b>ملاحظات:</b> ${inv.notes || 'لا يوجد'}</div>
+                    </div>
+                </div>`;
+
+                // الفصل الذكي: الفواتير المفتوحة تذهب لتبويب الفواتير الحالي لتعبئتها
+                if (inv.status === 'مفتوحة') {
+                    activeInvoicesHtml += invoiceCard;
+                }
+
+                // كشف الحساب: إذا كانت الفاتورة تابعة للاسم المختار حالياً تظهر بكشف حسابه المخصص بالكامل
+                if (activeEntityNameForStatement && inv.entityName.includes(activeEntityNameForStatement)) {
+                    statementHtml += invoiceCard;
+                    totalStatementBalance += totalInvoice;
+                }
+            });
+
+            // تعبئة البيانات في الشاشات
+            document.getElementById('invoicesContainer').innerHTML = activeInvoicesHtml || '<div class="alert alert-info text-center fw-bold">لا توجد فاتورة مفتوحة قيد العمل حالياً 👆 اختر جهة وافتح فاتورة جديدة للبدء.</div>';
+            
+            if (activeEntityNameForStatement) {
+                document.getElementById('selectedAccountName').innerText = `حساب: ${activeEntityNameForStatement}`;
+                const summaryHeader = `<div class="alert alert-success d-flex justify-content-between align-items-center fw-bold mb-4"><span>عدد المستندات: ${statementHtml ? document.createElement('div').innerHTML == statementHtml ? 0 : statementHtml.match(/card mb-4/g).length : 0} فاتورة</span> <span class="fs-5">إجمالي التعاملات الكلي: د.ع ${formatMoney(totalStatementBalance)}</span></div>`;
+                document.getElementById('accountStatementContainer').innerHTML = summaryHeader + (statementHtml || '<div class="alert alert-light text-center">لم يصدر لهذا الحساب أي فواتير بعد.</div>');
+            }
+        }
+
+        window.loadAccountStatement = (entityName) => {
+            activeEntityNameForStatement = entityName;
+            renderActiveInvoicesAndStatement();
+        };
 
         function stopRealtimeSync() {
             if (unsubscribeProducts) unsubscribeProducts();
@@ -407,7 +438,6 @@
             if (unsubscribeInvoices) unsubscribeInvoices();
         }
 
-        // إجراء العمليات مع إرفاق الـ userId بشكل آلي وثابت للتفرقة
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await addDoc(collection(db, "products"), {
@@ -423,14 +453,13 @@
             e.preventDefault();
             await addDoc(collection(db, "entities"), {
                 userId: currentUser.uid,
-                name: document.getElementById('entName').value,
+                name: document.getElementById('entName').value.trim(),
                 phone: document.getElementById('entPhone').value || '---',
                 type: document.getElementById('entType').value
             });
             document.getElementById('entityForm').reset();
         });
 
-        // دالة إنشاء الفاتورة المحدثة والمجربة بالكامل
         document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
@@ -453,29 +482,13 @@
                 });
                 
                 document.getElementById('invoiceForm').reset();
-                
-                // تنبيه خفيف ونقل الشاشة للأسفل لرؤية الفاتورة فوراً
-                window.scrollTo({
-                    top: document.getElementById('invoicesContainer').offsetTop,
-                    behavior: 'smooth'
-                });
-
-            } catch (err) {
-                alert("خطأ أثناء فتح الفاتورة: " + err.message);
-            }
+                alert("تم فتح الفاتورة بنجاح وتثبيتها في الأسفل لإضافة الأصناف 👇");
+            } catch (err) { alert("خطأ: " + err.message); }
         });
 
-        // بقية الدوال البرمجية المساعدة لإدارة الفاتورة
+        // بقية العمليات المساعدة
         window.deleteProduct = async (id) => { if(confirm("حذف الصنف نهائياً؟")) await deleteDoc(doc(db, "products", id)); };
-        window.deleteEntity = async (id) => { if (confirm("حذف الجهة نهائياً؟")) await deleteDoc(doc(db, "entities", id)); };
-        
-        window.editEntity = async (id, oldName, oldPhone, oldType) => {
-            const newName = prompt("تعديل اسم الجهة:", oldName); if (!newName) return;
-            const newPhone = prompt("تعديل رقم الهاتف:", oldPhone);
-            const newType = prompt("تعديل النوع (عميل أو مورد):", oldType);
-            if (newType !== "عميل" && newType !== "مورد") return;
-            await updateDoc(doc(db, "entities", id), { name: newName.trim(), phone: newPhone.trim() || '---', type: newType });
-        };
+        window.deleteEntity = async (id) => { if (confirm("حذف الجهة نهائياً؟")) { await deleteDoc(doc(db, "entities", id)); activeEntityNameForStatement = null; } };
 
         window.addItemToInvoice = async (e, invId) => {
             e.preventDefault();
@@ -508,7 +521,7 @@
         };
 
         window.deleteItemFromInvoice = async (invId, itemIndex) => {
-            if (!confirm("إرجاع المواد للمخزن وحذفها من الوصل Mom؟")) return;
+            if (!confirm("إرجاع المواد للمخزن وحذفها من الوصل؟")) return;
             const invSnap = await getDoc(doc(db, "invoices", invId));
             const items = invSnap.data().items; const item = items[itemIndex];
             const pSnap = await getDoc(doc(db, "products", item.productId));
@@ -529,9 +542,7 @@
         };
 
         window.changeInvoiceStatus = async (id, newStatus) => { 
-            try {
-                await updateDoc(doc(db, "invoices", id), { status: newStatus }); 
-            } catch (err) { alert("حدث خطأ أثناء تغيير حالة الفاتورة: " + err.message); }
+            try { await updateDoc(doc(db, "invoices", id), { status: newStatus }); } catch (err) { alert("خطأ: " + err.message); }
         };
 
         window.printInvoiceDocument = async (invId) => {
