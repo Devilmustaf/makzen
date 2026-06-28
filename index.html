@@ -5,22 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام إدارة المخازن والفواتير السحابي المطور</title>
     
-    <!-- إعدادات التثبيت كأيقونة تطبيق للموبايل (PWA Meta Tags) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="المخزن السحابي">
     <link class="no-print" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     
-    <!-- ربط الأيقونة العصرية للمخزن -->
     <link class="no-print" rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     <link class="no-print" rel="manifest" href="data:application/manifest+json,{%22name%22:%22%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%20%D8%A7%D9%84%D8%B3%D8%AD%D8%A7%D8%A8%D9%8A%22,%22short_name%22:%22%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f4f6f9%22,%22theme_color%22:%22%23198754%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/407/407826.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
 
-    <!-- جلب خط Cairo الاحترافي -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap RTL للموبايل -->
     <link class="no-print" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     
     <style>
@@ -38,16 +34,20 @@
         #authZone { max-width: 450px; margin: 60px auto; }
 
         @media print {
-            body * { visibility: hidden; }
-            #invoicePrintArea, #invoicePrintArea * { visibility: visible; }
-            #invoicePrintArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: #fff; }
+            body { background-color: #fff !important; }
             .no-print { display: none !important; }
+            .card { box-shadow: none !important; border: none !important; padding: 0 !important; }
+            .table-responsive { overflow: visible !important; }
+            
+            /* تفعيل طباعة منطقة الجرد أو الفواتير المستقلة بدقة */
+            #mainAppZone { margin: 0 !important; padding: 0 !important; }
+            #stockReportZone { display: block !important; opacity: 1 !important; }
+            #invoicePrintArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: #fff; visibility: visible; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ================= شاشة تسجيل الدخول المنفصلة ================= -->
     <div id="authZone" class="container">
         <div class="card p-4 shadow-sm bg-white text-center">
             <h3 class="fw-bold text-success mb-3">📦 تسجيل الدخول للمخزن</h3>
@@ -82,7 +82,6 @@
         </div>
     </div>
 
-    <!-- ================= لوحة التحكم الرئيسية ================= -->
     <div id="mainAppZone" class="container my-4 my-md-5 d-none">
         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 pb-3 border-bottom no-print">
             <div>
@@ -95,7 +94,6 @@
             </div>
         </div>
 
-        <!-- ألسنة التبويبات العلوية -->
         <ul class="nav nav-tabs mb-4 no-print" id="mainTabs" role="tablist">
             <li class="nav-item">
                 <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#productsZone" type="button" role="tab">📦 أصناف المخزن</button>
@@ -116,7 +114,6 @@
 
         <div class="tab-content" id="mainTabsContent">
             
-            <!-- 1. المخزن -->
             <div class="tab-pane fade show active no-print" id="productsZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 bg-white">
                     <h4 class="text-success mb-3 fw-bold">➕ إضافة صنف جديد للمخزن</h4>
@@ -163,7 +160,6 @@
                 </div>
             </div>
 
-            <!-- 2. إدارة الجهات والزبائن -->
             <div class="tab-pane fade no-print" id="entitiesZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 bg-white">
                     <h4 class="text-primary mb-3 fw-bold">👥 إضافة جهة جديدة (مورد / عميل)</h4>
@@ -207,7 +203,6 @@
                 </div>
             </div>
 
-            <!-- 3. فواتير الصرف الحالية النشطة -->
             <div class="tab-pane fade no-print" id="invoicesZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 border-primary bg-white">
                     <h4 class="text-primary mb-3 fw-bold">1️⃣ إنشاء فاتورة صرف جديدة</h4>
@@ -236,7 +231,6 @@
                 <div id="invoicesContainer"></div>
             </div>
 
-            <!-- 4. تبويب كشف الحساب والتدقيق -->
             <div class="tab-pane fade no-print" id="statementZone" role="tabpanel">
                 <div class="row">
                     <div class="col-12 col-md-4 mb-4">
@@ -278,9 +272,8 @@
                 </div>
             </div>
 
-            <!-- 5. التبويب الجديد: الجرد والتقارير المخزنية حسب الشركات المصنعة -->
-            <div class="tab-pane fade no-print" id="stockReportZone" role="tabpanel">
-                <div class="card p-3 p-md-4 shadow-sm bg-white mb-4 border border-info">
+            <div class="tab-pane fade" id="stockReportZone" role="tabpanel">
+                <div class="card p-3 p-md-4 shadow-sm bg-white mb-4 border border-info no-print">
                     <h4 class="text-info fw-bold mb-3">📋 كشف جرد المواد حسب الشركات المصنعة</h4>
                     <div class="row g-3 align-items-end">
                         <div class="col-12 col-md-6">
@@ -289,13 +282,26 @@
                                 <option value="ALL" selected>🌐 كشف كلي شامل بجميع الشركات</option>
                             </select>
                         </div>
-                        <div class="col-12 col-md-6 text-md-end">
-                            <button type="button" class="btn btn-info text-dark fw-bold px-4" onclick="generateStockReport()">🔄 تحديث وعرض تقرير الجرد</button>
+                        <div class="col-12 col-md-6 text-md-end d-flex gap-2 justify-content-md-end flex-wrap">
+                            <button type="button" class="btn btn-info text-dark fw-bold px-4" onclick="generateStockReport()">🔄 تحديث وعرض التقرير</button>
+                            <button type="button" id="btnPrintStockReport" class="btn btn-success fw-bold px-4 d-none" onclick="window.print()">🖨️ طباعة تقرير الجرد</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- لوحة الملخص السريع للتقرير الجاري -->
+                <div class="d-none d-print-block mb-4 border-bottom pb-3">
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <h2 class="fw-bold text-success">📝 تقرير جرد وتحليل المخزون السحابي</h2>
+                            <p class="text-muted mb-0">نظام إدارة المستودعات المتطور</p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <p class="mb-1"><b>التاريخ والوقت:</b> <span id="printReportDate">---</span></p>
+                            <span class="badge bg-dark p-2">مستند رسمي مخزني</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row g-2 mb-4" id="reportSummaryWidget">
                     <div class="col-6 col-md-6">
                         <div class="p-3 bg-light rounded text-center border shadow-sm">
@@ -311,22 +317,19 @@
                     </div>
                 </div>
 
-                <!-- حاوية طباعة وعرض جداول الجرد -->
                 <div class="card p-3 p-md-4 shadow-sm bg-white border">
                     <div id="stockReportResultsContainer">
-                        <div class="alert alert-light text-center py-3">اضغط على زر "تحديث وعرض تقرير الجرد" بالأعلى لتوليد التقرير السحابي الفوري للمخازن.</div>
+                        <div class="alert alert-light text-center py-3 no-print">اضغط على زر "تحديث وعرض التقرير" بالأعلى لتوليد التقرير السحابي الفوري للمخازن.</div>
                     </div>
                 </div>
             </div>
 
         </div>
 
-        <!-- منطقة طباعة الفواتير المستقلة -->
-        <div id="invoicePrintArea" class="d-none"></div>
+        <div id="invoicePrintArea" class="d-none no-print"></div>
 
     </div>
 
-    <!-- كود المحرك السحابي للفايربيس والمزامنة المزدوجة للفصل بين الفواتير المفتوحة والمؤرشفة -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
@@ -351,7 +354,7 @@
         let unsubscribeProducts = null, unsubscribeEntities = null, unsubscribeInvoices = null;
         
         let globalInvoicesList = []; 
-        let globalProductsList = []; // مصفوفة لتخزين المنتجات محلياً لتسريع الجرد والتقارير
+        let globalProductsList = []; 
         let activeEntityNameForStatement = null; 
 
         onAuthStateChanged(auth, (user) => {
@@ -389,14 +392,12 @@
         function startRealtimeSync() {
             const uid = currentUser.uid;
 
-            // 1. مزامنة المخزن وجلب حقل الشركة المصنعة وتحديث قائمة الفلاتر تلقائياً
+            // 1. مزامنة المخزن
             const qProd = query(collection(db, "products"), where("userId", "==", uid));
             unsubscribeProducts = onSnapshot(qProd, (snapshot) => {
                 let html = '';
                 let selectHtml = '<option value="" disabled selected>-- اختر مادة من المخزن --</option>';
                 globalProductsList = [];
-                
-                // تجميع الشركات المصنعة بدون تكرار للفلترة
                 const companiesSet = new Set();
 
                 snapshot.forEach(docSnap => {
@@ -421,9 +422,7 @@
                 document.getElementById('productsTableBody').innerHTML = html;
                 window.cachedProductsSelect = selectHtml;
                 
-                // تحديث قائمة اختيار الشركات في تبويب التقارير والجرد
                 updateReportCompanyDropdown(companiesSet);
-                
                 renderActiveInvoicesAndStatement(); 
             });
 
@@ -471,58 +470,50 @@
             });
         }
 
-        // تحديث القائمة المنسدلة للشركات بشكل ديناميكي بناءً على المدخلات الفعلية بالمخزن
         function updateReportCompanyDropdown(companiesSet) {
             const dropdown = document.getElementById('reportCompanyFilter');
             const currentValue = dropdown.value;
-            
             let optionsHtml = '<option value="ALL">🌐 كشف كلي شامل بجميع الشركات</option>';
             companiesSet.forEach(company => {
                 optionsHtml += `<option value="${company}">🏢 شركة: ${company}</option>`;
             });
-            
             dropdown.innerHTML = optionsHtml;
             if (companiesSet.has(currentValue) || currentValue === 'ALL') {
                 dropdown.value = currentValue;
             }
         }
 
-        // محرك توليد وعرض تقارير جرد المواد حسب الشركات
+        // محرك توليد وعرض تقارير جرد المواد وتفعيل زر الطباعة
         window.generateStockReport = () => {
             const filterValue = document.getElementById('reportCompanyFilter').value;
             const container = document.getElementById('stockReportResultsContainer');
+            const printBtn = document.getElementById('btnPrintStockReport');
             
+            // تحديث تاريخ ووقت تقرير الطباعة للتوثيق
+            document.getElementById('printReportDate').innerText = new Date().toLocaleString('ar-IQ');
+
             if (globalProductsList.length === 0) {
                 container.innerHTML = '<div class="alert alert-warning text-center fw-bold">المخزن فارغ حالياً! لا توجد أصناف لعمل كشف جرد لها.</div>';
                 document.getElementById('reportTotalItemsCount').innerText = "0";
                 document.getElementById('reportTotalValue').innerText = "د.ع 0.00";
+                printBtn.classList.add('d-none');
                 return;
             }
 
-            let finalHtml = '';
-            let overallValue = 0;
-            let overallItemsCount = 0;
+            let finalHtml = ''; let overallValue = 0; let overallItemsCount = 0;
 
             if (filterValue === 'ALL') {
-                // خيار: كشف كلي شامل مجمع حسب كل شركة على حدة
                 const groupedByCompany = {};
                 globalProductsList.forEach(p => {
-                    if (!groupedByCompany[p.company]) {
-                        groupedByCompany[p.company] = [];
-                    }
+                    if (!groupedByCompany[p.company]) groupedByCompany[p.company] = [];
                     groupedByCompany[p.company].push(p);
                 });
 
                 for (const companyName in groupedByCompany) {
-                    let sectionRows = '';
-                    let companySubtotal = 0;
-                    
+                    let sectionRows = ''; let companySubtotal = 0;
                     groupedByCompany[companyName].forEach(p => {
                         const sub = p.quantity * p.price;
-                        companySubtotal += sub;
-                        overallValue += sub;
-                        overallItemsCount++;
-                        
+                        companySubtotal += sub; overallValue += sub; overallItemsCount++;
                         sectionRows += `<tr>
                             <td class="text-start fw-bold">📦 ${p.name}</td>
                             <td><span class="badge bg-dark px-2 py-1 fs-6">${p.quantity}</span></td>
@@ -532,10 +523,10 @@
                     });
 
                     finalHtml += `
-                        <div class="mb-4 border rounded p-3 bg-light-subtle">
-                            <h5 class="text-dark border-bottom pb-2 mb-3 fw-bold d-flex justify-content-between">
+                        <div class="mb-4 border rounded p-3 bg-white">
+                            <h5 class="text-dark border-bottom pb-2 mb-3 fw-bold d-flex justify-content-between align-items-center">
                                 <span>🏢 مخزون شركة: <span class="text-primary">${companyName}</span></span>
-                                <span class="badge bg-secondary fs-6">الأنواع: ${groupedByCompany[companyName].length}</span>
+                                <span class="badge bg-secondary fs-6 no-print">الأنواع: ${groupedByCompany[companyName].length}</span>
                             </h5>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-sm align-middle text-center mb-0 bg-white">
@@ -559,18 +550,12 @@
                         </div>`;
                 }
             } else {
-                // خيار: تصفية وجرد شركة محددة واحدة فقط
-                let sectionRows = '';
-                let companySubtotal = 0;
-                
+                let sectionRows = ''; let companySubtotal = 0;
                 const filteredProducts = globalProductsList.filter(p => p.company === filterValue);
                 
                 filteredProducts.forEach(p => {
                     const sub = p.quantity * p.price;
-                    companySubtotal += sub;
-                    overallValue += sub;
-                    overallItemsCount++;
-                    
+                    companySubtotal += sub; overallValue += sub; overallItemsCount++;
                     sectionRows += `<tr>
                         <td class="text-start fw-bold">📦 ${p.name}</td>
                         <td><span class="badge bg-dark px-2 py-1 fs-6">${p.quantity}</span></td>
@@ -580,7 +565,7 @@
                 });
 
                 finalHtml = `
-                    <div class="border rounded p-3 bg-light-subtle">
+                    <div class="border rounded p-3 bg-white">
                         <h5 class="text-dark border-bottom pb-2 mb-3 fw-bold">
                             🏢 كشف مخصص لشركة: <span class="text-primary">${filterValue}</span>
                         </h5>
@@ -606,23 +591,19 @@
                     </div>`;
             }
 
-            // عرض البيانات والملخصات على الواجهة
             document.getElementById('reportTotalItemsCount').innerText = overallItemsCount;
             document.getElementById('reportTotalValue').innerText = `د.ع ${formatMoney(overallValue)}`;
             container.innerHTML = finalHtml;
+            
+            // إظهار زر الطباعة فور توفر البيانات
+            printBtn.classList.remove('d-none');
         };
 
-
-        // المحرك الرئيسي لفصل وعرض الفواتير الجارية عن كشوفات حساب الزبائن
         function renderActiveInvoicesAndStatement() {
-            let activeInvoicesHtml = '';
-            let statementHtml = '';
-            let totalStatementBalance = 0;
-            let targetAccountInvoiceCount = 0;
+            let activeInvoicesHtml = ''; let statementHtml = ''; let totalStatementBalance = 0; let targetAccountInvoiceCount = 0;
 
             globalInvoicesList.forEach(inv => {
-                const invId = inv.id;
-                let itemsRows = ''; let totalInvoice = 0;
+                const invId = inv.id; let itemsRows = ''; let totalInvoice = 0;
 
                 if (inv.items && Array.isArray(inv.items)) {
                     inv.items.forEach((item, index) => {
@@ -703,7 +684,6 @@
             if (unsubscribeInvoices) unsubscribeInvoices();
         }
 
-        // حفظ الصنف السحابي مع حقل الشركة المصنعة المخصص
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await addDoc(collection(db, "products"), {
@@ -789,7 +769,7 @@
         };
 
         window.deleteItemFromInvoice = async (invId, itemIndex) => {
-            if (!confirm("إرجاع المواد للمخزن وحذفها من الوصل Momento؟")) return;
+            if (!confirm("إرجاع المواد للمخزن وحذفها من الوصل؟")) return;
             const invSnap = await getDoc(doc(db, "invoices", invId));
             const items = invSnap.data().items; const item = items[itemIndex];
             const pSnap = await getDoc(doc(db, "products", item.productId));
