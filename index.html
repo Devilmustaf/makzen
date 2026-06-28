@@ -8,10 +8,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="المخزن السحابي">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
+    <link class="no-print" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%20%D8%A7%D9%84%D8%B3%D8%AD%D8%A7%D8%A8%D9%8A%22,%22short_name%22:%22%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f4f6f9%22,%22theme_color%22:%22%23198754%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/407/407826.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
+    <link class="no-print" rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
+    <link class="no-print" rel="manifest" href="data:application/manifest+json,{%22name%22:%22%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%20%D8%A7%D9%84%D8%B3%D8%AD%D8%A7%D8%A8%D9%8A%22,%22short_name%22:%22%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f4f6f9%22,%22theme_color%22:%22%23198754%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/407/407826.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,7 +60,7 @@
                 <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">أو بالطريقة العادية</span>
             </div>
 
-            <form id="authForm">
+            <form id="authForm" onsubmit="event.preventDefault();">
                 <div class="mb-3 text-start">
                     <label class="form-label fw-bold">البريد الإلكتروني</label>
                     <input type="email" id="authEmail" class="form-control" placeholder="name@example.com">
@@ -307,7 +307,7 @@
                         <td class="fw-bold text-success">د.ع ${formatMoney(p.quantity * p.price)}</td>
                         <td><button class="btn btn-sm btn-danger fw-bold" onclick="deleteProduct('${docSnap.id}')">❌ حذف</button></td>
                     </tr>`;
-                    selectHtml += `<option value="${docSnap.id}">${p.name} (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>';`;
+                    selectHtml += `<option value="${docSnap.id}">${p.name} (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>`;
                 });
                 document.getElementById('productsTableBody').innerHTML = html;
                 window.cachedProductsSelect = selectHtml;
@@ -344,20 +344,22 @@
                     const invId = docSnap.id;
                     let itemsRows = ''; let totalInvoice = 0;
 
-                    inv.items.forEach((item, index) => {
-                        const subtotal = item.quantitySpent * item.priceAtTransaction;
-                        totalInvoice += subtotal;
-                        itemsRows += `<tr>
-                            <td class="text-start fw-bold">📦 ${item.productName}</td>
-                            <td><input type="number" id="qty-${invId}-${index}" value="${item.quantitySpent}" class="form-control form-control-sm text-center fw-bold" min="1" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
-                            <td><input type="number" id="price-${invId}-${index}" value="${item.priceAtTransaction}" class="form-control form-control-sm text-center" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
-                            <td class="fw-bold text-dark">د.ع ${formatMoney(subtotal)}</td>
-                            ${inv.status === 'مفتوحة' ? `<td>
-                                <button class="btn btn-sm btn-success py-0 px-2" onclick="saveItemChanges('${invId}', ${index})">💾</button>
-                                <button class="btn btn-sm btn-danger py-0 px-2" onclick="deleteItemFromInvoice('${invId}', ${index})">❌</button>
-                            </td>` : ''}
-                        </tr>`;
-                    });
+                    if (inv.items && Array.isArray(inv.items)) {
+                        inv.items.forEach((item, index) => {
+                            const subtotal = item.quantitySpent * item.priceAtTransaction;
+                            totalInvoice += subtotal;
+                            itemsRows += `<tr>
+                                <td class="text-start fw-bold">📦 ${item.productName}</td>
+                                <td><input type="number" id="qty-${invId}-${index}" value="${item.quantitySpent}" class="form-control form-control-sm text-center fw-bold" min="1" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
+                                <td><input type="number" id="price-${invId}-${index}" value="${item.priceAtTransaction}" class="form-control form-control-sm text-center" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
+                                <td class="fw-bold text-dark">د.ع ${formatMoney(subtotal)}</td>
+                                ${inv.status === 'مفتوحة' ? `<td>
+                                    <button class="btn btn-sm btn-success py-0 px-2" onclick="saveItemChanges('${invId}', ${index})">💾</button>
+                                    <button class="btn btn-sm btn-danger py-0 px-2" onclick="deleteItemFromInvoice('${invId}', ${index})">❌</button>
+                                </td>` : ''}
+                            </tr>`;
+                        });
+                    }
 
                     html += `<div class="card mb-4 border border-secondary bg-white">
                         <div class="card-header bg-dark text-white d-flex flex-column flex-sm-row justify-content-between align-items-sm-center p-3">
@@ -419,20 +421,32 @@
             document.getElementById('entityForm').reset();
         });
 
+        // تم إصلاح الدالة هنا لمنع إعادة تحميل الصفحة وضمان الحفظ الفوري بالكامل
         document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const entSelect = document.getElementById('invEntity');
-            await addDoc(collection(db, "invoices"), {
-                userId: currentUser.uid,
-                invoiceId: "INV-" + Date.now().toString().slice(-6),
-                entityName: entSelect.options[entSelect.selectedIndex].text,
-                address: document.getElementById('invAddress').value,
-                notes: document.getElementById('invNotes').value,
-                status: "مفتوحة",
-                items: [],
-                createdAt: Date.now()
-            });
-            document.getElementById('invoiceForm').reset();
+            try {
+                const entSelect = document.getElementById('invEntity');
+                if(!entSelect.value) { alert("الرجاء اختيار جهة مستلمة أولاً!"); return; }
+
+                const entityName = entSelect.options[entSelect.selectedIndex].text;
+                const address = document.getElementById('invAddress').value;
+                const notes = document.getElementById('invNotes').value || '';
+
+                await addDoc(collection(db, "invoices"), {
+                    userId: currentUser.uid,
+                    invoiceId: "INV-" + Date.now().toString().slice(-6),
+                    entityName: entityName,
+                    address: address,
+                    notes: notes,
+                    status: "مفتوحة",
+                    items: [],
+                    createdAt: Date.now()
+                });
+                
+                document.getElementById('invoiceForm').reset();
+            } catch (err) {
+                alert("خطأ أثناء فتح الفاتورة: " + err.message);
+            }
         });
 
         // بقية الدوال البرمجية المساعدة لإدارة الفاتورة
@@ -464,7 +478,7 @@
 
         window.saveItemChanges = async (invId, itemIndex) => {
             const newQty = parseInt(document.getElementById(`qty-${invId}-${itemIndex}`).value);
-            const newPrice = floatParse(document.getElementById(`price-${invId}-${itemIndex}`).value);
+            const newPrice = floatParse(document.getElementById('price-' + invId + '-' + itemIndex).value);
             const invSnap = await getDoc(doc(db, "invoices", invId));
             const items = invSnap.data().items; const item = items[itemIndex];
             const pSnap = await getDoc(doc(db, "products", item.productId));
@@ -489,20 +503,19 @@
         window.deleteEntireInvoice = async (invId) => {
             if (!confirm("حذف الفاتورة بالكامل وموازنة المخازن؟")) return;
             const invSnap = await getDoc(doc(db, "invoices", invId));
-            for (const item of invSnap.data().items) {
-                const pSnap = await getDoc(doc(db, "products", item.productId));
-                if (pSnap.exists()) await updateDoc(doc(db, "products", item.productId), { quantity: pSnap.data().quantity + item.quantitySpent });
+            if (invSnap.exists() && invSnap.data().items) {
+                for (const item of invSnap.data().items) {
+                    const pSnap = await getDoc(doc(db, "products", item.productId));
+                    if (pSnap.exists()) await updateDoc(doc(db, "products", item.productId), { quantity: pSnap.data().quantity + item.quantitySpent });
+                }
             }
             await deleteDoc(doc(db, "invoices", invId));
         };
 
-        // الدالة المصلحة والمسؤولة عن فتح واعتماد الفاتورة بشكل صحيح وربطها بجدول الفايربيس
         window.changeInvoiceStatus = async (id, newStatus) => { 
             try {
                 await updateDoc(doc(db, "invoices", id), { status: newStatus }); 
-            } catch (err) {
-                alert("حدث خطأ أثناء تغيير حالة الفاتورة: " + err.message);
-            }
+            } catch (err) { alert("حدث خطأ أثناء تغيير حالة الفاتورة: " + err.message); }
         };
 
         window.printInvoiceDocument = async (invId) => {
