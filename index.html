@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المخازن والفواتير السحابي المطور</title>
+    <title>نظام إدارة المخازن والفواتير المطور</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="المخزن السحابي">
+    <meta name="apple-mobile-web-app-title" content="المخزن المطور">
     <link class="no-print" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     
     <link class="no-print" rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
@@ -22,24 +22,70 @@
     <style>
         body { 
             font-family: 'Cairo', sans-serif; 
-            background-color: #f4f6f9; 
+            background-color: #f8f9fa; 
+            color: #333;
         }
         .nav-tabs .nav-link { font-weight: bold; color: #495057; }
         .nav-tabs .nav-link.active { background-color: #fff; color: #198754; border-bottom-color: transparent; }
-        .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        th { background-color: #212529 !important; color: white !important; text-align: center; }
-        td { text-align: center; vertical-align: middle; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        
+        /* تجميل الجداول لتكون متناسقة ومتوسطة الحجم وتناظرية */
+        th { 
+            background-color: #2b3035 !important; 
+            color: #ffffff !important; 
+            text-align: center; 
+            font-weight: 700;
+            font-size: 14px;
+            padding: 10px 8px !important;
+            vertical-align: middle;
+        }
+        td { 
+            text-align: center; 
+            vertical-align: middle; 
+            font-size: 14px;
+            padding: 8px !important;
+            color: #495057;
+        }
         
         /* شاشة تسجيل الدخول */
         #authZone { max-width: 450px; margin: 60px auto; }
 
+        /* تنسيقات تقرير جرد وتحليل المخزون */
+        .report-header-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #198754;
+        }
+        .company-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #212529;
+            background: #e9ecef;
+            padding: 8px 15px;
+            border-radius: 6px;
+        }
+        .report-widget-card {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        .report-widget-number {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
         @media print {
-            body { background-color: #fff !important; }
+            body { background-color: #fff !important; font-size: 12px; }
             .no-print { display: none !important; }
-            .card { box-shadow: none !important; border: none !important; padding: 0 !important; }
+            .card { box-shadow: none !important; border: none !important; padding: 0 !important; background: transparent !important; }
             .table-responsive { overflow: visible !important; }
-            
-            /* تفعيل طباعة منطقة الجرد أو الفواتير المستقلة بدقة */
+            th { background-color: #495057 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            td { padding: 6px !important; font-size: 12px; }
+            .company-section-title { background: #f1f3f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .table-info { background-color: #e8f4fd !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             #mainAppZone { margin: 0 !important; padding: 0 !important; }
             #stockReportZone { display: block !important; opacity: 1 !important; }
             #invoicePrintArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: #fff; visibility: visible; }
@@ -49,7 +95,7 @@
 <body>
 
     <div id="authZone" class="container">
-        <div class="card p-4 shadow-sm bg-white text-center">
+        <div class="card p-4 text-center bg-white">
             <h3 class="fw-bold text-success mb-3">📦 تسجيل الدخول للمخزن</h3>
             <p class="text-muted small">سجل دخولك لفتح مخزنك الخاص بك بشكل مستقل</p>
             
@@ -89,7 +135,7 @@
                 <small id="userDisplayEmail" class="text-muted fw-bold"></small>
             </div>
             <div class="mt-2 mt-sm-0 d-flex gap-2">
-                <span class="badge bg-dark fs-6 p-2 align-self-center">متصل سحابياً 🟢</span>
+                <span class="badge bg-dark fs-6 p-2 align-self-center">متصل  🟢</span>
                 <button id="btnLogout" class="btn btn-sm btn-danger fw-bold">خروج 🚪</button>
             </div>
         </div>
@@ -143,15 +189,15 @@
                 <div class="card p-3 p-md-4 shadow-sm bg-white">
                     <h4 class="mb-3 fw-bold">الأصناف الحالية في المخزن</h4>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle">
+                        <table class="table table-bordered table-striped table-hover align-middle mb-0">
                             <thead>
                                 <tr>
                                     <th>اسم الصنف</th>
                                     <th>الشركة المصنعة</th>
-                                    <th>الكمية المتوفرة</th>
-                                    <th>السعر المفرد</th>
-                                    <th>إجمالي القيمة</th>
-                                    <th>إجراءات</th>
+                                    <th style="width: 120px;">الكمية المتوفرة</th>
+                                    <th style="width: 160px;">السعر المفرد</th>
+                                    <th style="width: 180px;">إجمالي القيمة</th>
+                                    <th style="width: 100px;">إجراءات</th>
                                 </tr>
                             </thead>
                             <tbody id="productsTableBody"></tbody>
@@ -188,13 +234,13 @@
                 <div class="card p-3 p-md-4 shadow-sm bg-white">
                     <h4 class="mb-3 fw-bold">قائمة الجهات والزبائن المسجلة</h4>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
+                        <table class="table table-bordered table-striped table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>الاسم</th>
                                     <th>رقم الهاتف</th>
-                                    <th>النوع</th>
-                                    <th>إجراءات</th>
+                                    <th style="width: 150px;">النوع</th>
+                                    <th style="width: 100px;">إجراءات</th>
                                 </tr>
                             </thead>
                             <tbody id="entitiesTableBody"></tbody>
@@ -289,38 +335,36 @@
                     </div>
                 </div>
 
-                <div class="d-none d-print-block mb-4 border-bottom pb-3">
+                <div class="mb-4 border-bottom pb-3">
                     <div class="row align-items-center">
-                        <div class="col-6">
-                            <h2 class="fw-bold text-success">📝 تقرير جرد وتحليل المخزون السحابي</h2>
-                            <p class="text-muted mb-0">نظام إدارة المستودعات المتطور</p>
+                        <div class="col-12 col-sm-6 text-center text-sm-start">
+                            <h2 class="report-header-title mb-1">📋 تقرير جرد وتحليل المخزون المطور</h2>
+                            <p class="text-muted small mb-2 mb-sm-0">نظام إدارة المستودعات والتدقيق البرمجي المتطور</p>
                         </div>
-                        <div class="col-6 text-end">
-                            <p class="mb-1"><b>التاريخ والوقت:</b> <span id="printReportDate">---</span></p>
-                            <span class="badge bg-dark p-2">مستند رسمي مخزني</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-2 mb-4" id="reportSummaryWidget">
-                    <div class="col-6 col-md-6">
-                        <div class="p-3 bg-light rounded text-center border shadow-sm">
-                            <small class="text-muted d-block fw-bold">أنواع المواد المتوفرة بالتقرير</small>
-                            <span id="reportTotalItemsCount" class="fs-3 fw-bold text-dark">0</span>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-6">
-                        <div class="p-3 bg-info-subtle rounded text-center border border-info shadow-sm">
-                            <small class="text-info-emphasis d-block fw-bold">القيمة المالية الإجمالية للمخزون المجرود</small>
-                            <span id="reportTotalValue" class="fs-3 fw-bold text-info-emphasis">د.ع 0.00</span>
+                        <div class="col-12 col-sm-6 text-center text-sm-end">
+                            <p class="mb-1 fw-bold small">التاريخ والوقت: <span id="printReportDate" class="text-secondary">---</span></p>
+                            <span class="badge bg-dark px-3 py-1.5 small fw-bold">مستند رسمي مخزني منسق</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="card p-3 p-md-4 shadow-sm bg-white border">
-                    <div id="stockReportResultsContainer">
-                        <div class="alert alert-light text-center py-3 no-print">اضغط على زر "تحديث وعرض التقرير" بالأعلى لتوليد التقرير السحابي الفوري للمخازن.</div>
+                <div class="row g-3 mb-4" id="reportSummaryWidget">
+                    <div class="col-12 col-sm-6">
+                        <div class="report-widget-card text-center">
+                            <small class="text-muted fw-bold d-block text-uppercase">أنواع المواد المتوفرة بالتقرير</small>
+                            <div id="reportTotalItemsCount" class="report-widget-number text-dark">0</div>
+                        </div>
                     </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="report-widget-card text-center border-info bg-opacity-10" style="background-color: #f1f9fe;">
+                            <small class="text-info-emphasis fw-bold d-block">القيمة المالية الإجمالية للمخزون المجرود</small>
+                            <div id="reportTotalValue" class="report-widget-number text-info-emphasis">د.ع 0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="stockReportResultsContainer">
+                    <div class="alert alert-light text-center py-4 border no-print">اضغط على زر "تحديث وعرض التقرير" بالأعلى لتوليد التقرير السحابي الفوري للمخازن.</div>
                 </div>
             </div>
 
@@ -409,11 +453,11 @@
 
                     html += `<tr>
                         <td class="fw-bold text-start">📦 ${p.name}</td>
-                        <td class="fw-bold text-muted">${companyName}</td>
-                        <td><span class="badge bg-secondary p-2 fs-6">${p.quantity}</span></td>
+                        <td class="fw-bold text-muted small">${companyName}</td>
+                        <td><span class="badge bg-secondary px-2.5 py-1.5 fs-6">${p.quantity}</span></td>
                         <td>د.ع ${formatMoney(p.price)}</td>
                         <td class="fw-bold text-success">د.ع ${formatMoney(p.quantity * p.price)}</td>
-                        <td><button class="btn btn-sm btn-danger fw-bold" onclick="deleteProduct('${docSnap.id}')">❌ حذف</button></td>
+                        <td><button class="btn btn-sm btn-danger py-0.5 px-2 small fw-bold" onclick="deleteProduct('${docSnap.id}')">❌ حذف</button></td>
                     </tr>`;
                     
                     selectHtml += `<option value="${docSnap.id}">${p.name} [الشركة: ${companyName}] (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>`;
@@ -441,7 +485,7 @@
                         <td class="fw-bold text-start">👤 ${e.name}</td>
                         <td>${e.phone}</td>
                         <td><span class="badge ${e.type === 'مورد' ? 'bg-info text-dark' : 'bg-warning text-dark'} fw-bold">${e.type}</span></td>
-                        <td><button class="btn btn-sm btn-danger py-0 fw-bold" onclick="deleteEntity('${docSnap.id}')">❌ حذف</button></td>
+                        <td><button class="btn btn-sm btn-danger py-0.5 px-2 small fw-bold" onclick="deleteEntity('${docSnap.id}')">❌ حذف</button></td>
                     </tr>`;
                     
                     selectOptions += `<option value="${docSnap.id}">${e.name} (${e.type})</option>`;
@@ -483,13 +527,12 @@
             }
         }
 
-        // محرك توليد وعرض تقارير جرد المواد وتفعيل زر الطباعة
+        // محرك توليد وعرض تقارير جرد المواد المنسق هندسياً بالتوسيط والأحجام المعتدلة
         window.generateStockReport = () => {
             const filterValue = document.getElementById('reportCompanyFilter').value;
             const container = document.getElementById('stockReportResultsContainer');
             const printBtn = document.getElementById('btnPrintStockReport');
             
-            // تحديث تاريخ ووقت تقرير الطباعة للتوثيق
             document.getElementById('printReportDate').innerText = new Date().toLocaleString('ar-IQ');
 
             if (globalProductsList.length === 0) {
@@ -511,38 +554,40 @@
 
                 for (const companyName in groupedByCompany) {
                     let sectionRows = ''; let companySubtotal = 0;
-                    groupedByCompany[companyName].forEach(p => {
+                    groupedByCompany[companyName].forEach((p, idx) => {
                         const sub = p.quantity * p.price;
                         companySubtotal += sub; overallValue += sub; overallItemsCount++;
                         sectionRows += `<tr>
+                            <td style="width: 50px;" class="text-muted small">${idx + 1}</td>
                             <td class="text-start fw-bold">📦 ${p.name}</td>
-                            <td><span class="badge bg-dark px-2 py-1 fs-6">${p.quantity}</span></td>
-                            <td>د.ع ${formatMoney(p.price)}</td>
-                            <td class="text-success fw-bold">د.ع ${formatMoney(sub)}</td>
+                            <td style="width: 140px;"><span class="badge bg-dark px-2.5 py-1 fs-6 fw-normal">${p.quantity}</span></td>
+                            <td style="width: 180px;">د.ع ${formatMoney(p.price)}</td>
+                            <td style="width: 200px;" class="text-success fw-bold">د.ع ${formatMoney(sub)}</td>
                         </tr>`;
                     });
 
                     finalHtml += `
-                        <div class="mb-4 border rounded p-3 bg-white">
-                            <h5 class="text-dark border-bottom pb-2 mb-3 fw-bold d-flex justify-content-between align-items-center">
-                                <span>🏢 مخزون شركة: <span class="text-primary">${companyName}</span></span>
-                                <span class="badge bg-secondary fs-6 no-print">الأنواع: ${groupedByCompany[companyName].length}</span>
-                            </h5>
+                        <div class="card p-3 shadow-sm bg-white mb-4 border">
+                            <div class="company-section-title mb-3 d-flex justify-content-between align-items-center">
+                                <span>🏢 مخزون شركة: <b>${companyName}</b></span>
+                                <span class="badge bg-secondary fw-normal px-2 py-1 small">الأنواع: ${groupedByCompany[companyName].length}</span>
+                            </div>
                             <div class="table-responsive">
-                                <table class="table table-bordered table-sm align-middle text-center mb-0 bg-white">
-                                    <thead class="table-secondary">
+                                <table class="table table-bordered align-middle mb-0 bg-white">
+                                    <thead>
                                         <tr>
-                                            <th>اسم الصنف</th>
-                                            <th style="width: 150px;">الكمية الحالية</th>
-                                            <th style="width: 180px;">السعر المفرد</th>
-                                            <th style="width: 220px;">إجمالي القيمة المادية</th>
+                                            <th>ت</th>
+                                            <th>اسم الصنف المجرود</th>
+                                            <th>الكمية المتوفرة</th>
+                                            <th>السعر المفرد</th>
+                                            <th>إجمالي القيمة المادية</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         ${sectionRows}
                                         <tr class="table-info fw-bold text-dark">
-                                            <td colspan="3" class="text-end">قيمة مخزون (${companyName}) الكلي:</td>
-                                            <td class="text-info-emphasis">د.ع ${formatMoney(companySubtotal)}</td>
+                                            <td colspan="4" class="text-end py-2">قيمة مخزون (${companyName}) الكلي:</td>
+                                            <td class="text-primary text-center">د.ع ${formatMoney(companySubtotal)}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -553,37 +598,39 @@
                 let sectionRows = ''; let companySubtotal = 0;
                 const filteredProducts = globalProductsList.filter(p => p.company === filterValue);
                 
-                filteredProducts.forEach(p => {
+                filteredProducts.forEach((p, idx) => {
                     const sub = p.quantity * p.price;
                     companySubtotal += sub; overallValue += sub; overallItemsCount++;
                     sectionRows += `<tr>
+                        <td style="width: 50px;" class="text-muted small">${idx + 1}</td>
                         <td class="text-start fw-bold">📦 ${p.name}</td>
-                        <td><span class="badge bg-dark px-2 py-1 fs-6">${p.quantity}</span></td>
-                        <td>د.ع ${formatMoney(p.price)}</td>
-                        <td class="text-success fw-bold">د.ع ${formatMoney(sub)}</td>
+                        <td style="width: 140px;"><span class="badge bg-dark px-2.5 py-1 fs-6 fw-normal">${p.quantity}</span></td>
+                        <td style="width: 180px;">د.ع ${formatMoney(p.price)}</td>
+                        <td style="width: 200px;" class="text-success fw-bold">د.ع ${formatMoney(sub)}</td>
                     </tr>`;
                 });
 
                 finalHtml = `
-                    <div class="border rounded p-3 bg-white">
-                        <h5 class="text-dark border-bottom pb-2 mb-3 fw-bold">
-                            🏢 كشف مخصص لشركة: <span class="text-primary">${filterValue}</span>
-                        </h5>
+                    <div class="card p-3 shadow-sm bg-white border">
+                        <div class="company-section-title mb-3">
+                            🏢 كشف مخصص لشركة: <b>${filterValue}</b>
+                        </div>
                         <div class="table-responsive">
-                            <table class="table table-bordered align-middle text-center mb-0 bg-white">
-                                <thead class="table-secondary">
+                            <table class="table table-bordered align-middle mb-0 bg-white">
+                                <thead>
                                     <tr>
-                                        <th>اسم الصنف</th>
-                                        <th style="width: 150px;">الكمية الحالية</th>
-                                        <th style="width: 180px;">السعر المفرد</th>
-                                        <th style="width: 220px;">إجمالي القيمة المادية</th>
+                                        <th>ت</th>
+                                        <th>اسم الصنف المجرود</th>
+                                        <th>الكمية المتوفرة</th>
+                                        <th>السعر المفرد</th>
+                                        <th>إجمالي القيمة المادية</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${sectionRows || '<tr><td colspan="4" class="text-muted py-3">لا توجد أصناف لهذه الشركة.</td></tr>'}
+                                    ${sectionRows || '<tr><td colspan="5" class="text-muted py-3">لا توجد أصناف لهذه الشركة.</td></tr>'}
                                     <tr class="table-info fw-bold text-dark">
-                                        <td colspan="3" class="text-end">قيمة مخزون (${filterValue}) الإجمالي:</td>
-                                        <td class="text-info-emphasis">د.ع ${formatMoney(companySubtotal)}</td>
+                                        <td colspan="4" class="text-end py-2">قيمة مخزون (${filterValue}) الإجمالي:</td>
+                                        <td class="text-primary text-center">د.ع ${formatMoney(companySubtotal)}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -594,8 +641,6 @@
             document.getElementById('reportTotalItemsCount').innerText = overallItemsCount;
             document.getElementById('reportTotalValue').innerText = `د.ع ${formatMoney(overallValue)}`;
             container.innerHTML = finalHtml;
-            
-            // إظهار زر الطباعة فور توفر البيانات
             printBtn.classList.remove('d-none');
         };
 
@@ -730,7 +775,7 @@
         });
 
         window.deleteProduct = async (id) => { if(confirm("حذف الصنف نهائياً؟")) await deleteDoc(doc(db, "products", id)); };
-        window.deleteEntity = async (id) => { if (confirm("حذف الجهة نهائياً؟")) { await deleteDoc(doc(db, "entities", id)); activeEntityNameForStatement = null; } };
+        window.deleteEntity = async (id) => { if (confirm("حذف الجهة نهائياً exchange؟")) { await deleteDoc(doc(db, "entities", id)); activeEntityNameForStatement = null; } };
 
         window.addItemToInvoice = async (e, invId) => {
             e.preventDefault();
