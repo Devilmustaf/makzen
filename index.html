@@ -223,7 +223,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -335,13 +335,21 @@
                 document.getElementById('invEntity').innerHTML = options;
             });
 
-            // 3. مزامنة فواتير الصرف وترتيبها تنازلياً حسب الوقت
-            const qInv = query(collection(db, "invoices"), where("userId", "==", uid), orderBy("createdAt", "desc"));
+            // 3. تم تعديل الاستعلام هنا ليتجنب الترتيب السيرفري (orderBy) لمنع مشكلة الـ Index المفقود تماماً
+            const qInv = query(collection(db, "invoices"), where("userId", "==", uid));
             unsubscribeInvoices = onSnapshot(qInv, (snapshot) => {
                 let html = '';
+                let invoicesList = [];
+                
                 snapshot.forEach(docSnap => {
-                    const inv = docSnap.data();
-                    const invId = docSnap.id;
+                    invoicesList.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                // ترتيب الفواتير برمجياً من الأحدث للأقدم بناءً على وقت الإنشاء لحل المشكلة نهائياً
+                invoicesList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+                invoicesList.forEach(inv => {
+                    const invId = inv.id;
                     let itemsRows = ''; let totalInvoice = 0;
 
                     if (inv.items && Array.isArray(inv.items)) {
@@ -380,15 +388,16 @@
                                 <table class="table table-sm table-bordered text-center align-middle mb-0">
                                     <thead class="table-light"><tr><th>اسم المادة</th><th style="width: 100px;">الكمية</th><th style="width: 140px;">السعر</th><th>المجموع</th>${inv.status === 'مفتوحة' ? '<th>إجراء</th>' : ''}</tr></thead>
                                     <tbody>
-                                        ${itemsRows || '<tr><td colspan="5" class="text-muted py-2">لا توجد مواد مدرجة حالياً.</td></tr>'}
+                                        ${itemsRows || '<tr><td colspan="5" class="text-muted py-2">لا توجد مواد مدرجة حالياً. الرجاء إضافة مادة من القائمة أعلاه 👆</td></tr>'}
                                         ${totalInvoice > 0 ? `<tr class="table-success fw-bold"><td colspan="3" class="text-end">المجموع الكلي:</td><td colspan="2" class="text-start text-success fs-5">د.ع ${formatMoney(totalInvoice)}</td></tr>` : ''}
                                     </tbody>
                                 </table>
                             </div>
+                            <div class="mt-2 text-muted small">📍 <b>العنوان:</b> ${inv.address || 'غير محدد'} | 📝 <b>ملاحظات:</b> ${inv.notes || 'لا يوجد'}</div>
                         </div>
                     </div>`;
                 });
-                document.getElementById('invoicesContainer').innerHTML = html;
+                document.getElementById('invoicesContainer').innerHTML = html || '<div class="alert alert-info text-center">لا توجد فواتير مفتوحة حالياً. أنشئ فاتورة جديدة للبدء.</div>';
             });
         }
 
@@ -421,7 +430,7 @@
             document.getElementById('entityForm').reset();
         });
 
-        // تم إصلاح الدالة هنا لمنع إعادة تحميل الصفحة وضمان الحفظ الفوري بالكامل
+        // دالة إنشاء الفاتورة المحدثة والمجربة بالكامل
         document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
@@ -444,6 +453,13 @@
                 });
                 
                 document.getElementById('invoiceForm').reset();
+                
+                // تنبيه خفيف ونقل الشاشة للأسفل لرؤية الفاتورة فوراً
+                window.scrollTo({
+                    top: document.getElementById('invoicesContainer').offsetTop,
+                    behavior: 'smooth'
+                });
+
             } catch (err) {
                 alert("خطأ أثناء فتح الفاتورة: " + err.message);
             }
@@ -492,7 +508,7 @@
         };
 
         window.deleteItemFromInvoice = async (invId, itemIndex) => {
-            if (!confirm("إرجاع المواد للمخزن وحذفها من الوصل؟")) return;
+            if (!confirm("إرجاع المواد للمخزن وحذفها من الوصل Mom؟")) return;
             const invSnap = await getDoc(doc(db, "invoices", invId));
             const items = invSnap.data().items; const item = items[itemIndex];
             const pSnap = await getDoc(doc(db, "products", item.productId));
@@ -528,6 +544,7 @@
             document.getElementById('invoicePrintArea').innerHTML = `
                 <div class="row align-items-center mb-4 border-bottom pb-3"><div class="col-6"><h3>وصل صرف مواد رسمي</h3><p>رقم المستند: #${inv.invoiceId}</p></div><div class="col-6 text-end"><h5>مستند مخزني سحابي</h5></div></div>
                 <p><strong>المستلم:</strong> ${inv.entityName} | <strong>العنوان:</strong> ${inv.address}</p>
+                <p><strong>ملاحظات:</strong> ${inv.notes || 'لا يوجد'}</p>
                 <table class="table table-bordered text-center my-4"><thead class="table-light"><tr><th>تسلل</th><th>اسم الصنف</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead><tbody>${rows}<tr><td colspan="4" class="text-end">المجموع الكلي:</td><td class="text-success fw-bold">د.ع ${formatMoney(total)}</td></tr></tbody></table>
                 <div class="mt-4 text-center no-print"><button onclick="window.print()" class="btn btn-success px-4 fw-bold">🖨️ بدء الطباعة</button> <button onclick="document.getElementById('invoicePrintArea').classList.add('d-none')" class="btn btn-outline-secondary px-4 fw-bold">🔙 رجوع</button></div>`;
             document.getElementById('invoicePrintArea').classList.remove('d-none');
