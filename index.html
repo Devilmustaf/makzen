@@ -5,23 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام إدارة المخازن والفواتير السحابي المطور</title>
     
-    <!-- إعدادات التثبيت كأيقونة تطبيق للموبايل (PWA Meta Tags) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="المخزن السحابي">
     <link class="no-print" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     
-    <!-- ربط الأيقونة العصرية للمخزن -->
     <link class="no-print" rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/407/407826.png">
     <link class="no-print" rel="manifest" href="data:application/manifest+json,{%22name%22:%22%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%20%D8%A7%D9%84%D8%B3%D8%AD%D8%A7%D8%A8%D9%8A%22,%22short_name%22:%22%D8%A7%D9%84%D9%85%D8%AE%D8%B2%D9%86%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f4f6f9%22,%22theme_color%22:%22%23198754%22,%22icons%22:[{%22src%22:%22https://cdn-icons-png.flaticon.com/512/407/407826.png%22,%22sizes%22:%22512x512%22,%22type%22:%22image/png%22}]}">
 
-    <!-- جلب خط Cairo الاحترافي -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap RTL للموبايل -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link class="no-print" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     
     <style>
         body { 
@@ -47,7 +43,6 @@
 </head>
 <body>
 
-    <!-- ================= شاشة تسجيل الدخول المنفصلة ================= -->
     <div id="authZone" class="container">
         <div class="card p-4 shadow-sm bg-white text-center">
             <h3 class="fw-bold text-success mb-3">📦 تسجيل الدخول للمخزن</h3>
@@ -82,7 +77,6 @@
         </div>
     </div>
 
-    <!-- ================= لوحة التحكم الرئيسية ================= -->
     <div id="mainAppZone" class="container my-4 my-md-5 d-none">
         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 pb-3 border-bottom no-print">
             <div>
@@ -95,7 +89,6 @@
             </div>
         </div>
 
-        <!-- ألسنة التبويبات العلوية -->
         <ul class="nav nav-tabs mb-4 no-print" id="mainTabs" role="tablist">
             <li class="nav-item">
                 <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#productsZone" type="button" role="tab">📦 أصناف المخزن</button>
@@ -113,29 +106,28 @@
 
         <div class="tab-content" id="mainTabsContent">
             
-            <!-- 1. المخزن (تم إضافة حقل الشركة المصنعة هنا) -->
             <div class="tab-pane fade show active no-print" id="productsZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 bg-white">
                     <h4 class="text-success mb-3 fw-bold">➕ إضافة صنف جديد للمخزن</h4>
                     <form id="productForm" class="row g-3">
                         <div class="col-12 col-md-3">
                             <label class="form-label fw-bold">اسم الصنف</label>
-                            <input type="text" id="prodName" class="form-control" required>
+                            <input type="text" id="prodName" class="form-control" placeholder="اسم المادة" required>
                         </div>
                         <div class="col-12 col-md-3">
                             <label class="form-label fw-bold">الشركة المصنعة</label>
-                            <input type="text" id="prodCompany" class="form-control" placeholder="مثال: توشيبا، سامسونج..." required>
+                            <input type="text" id="prodCompany" class="form-control" placeholder="اسم الشركة المصنعة" required>
                         </div>
                         <div class="col-6 col-md-3">
                             <label class="form-label fw-bold">الكمية / العدد</label>
-                            <input type="number" id="prodQty" class="form-control" min="0" required>
+                            <input type="number" id="prodQty" class="form-control" min="0" placeholder="0" required>
                         </div>
                         <div class="col-6 col-md-3">
-                            <label class="form-label fw-bold">السعر (د.ع)</label>
-                            <input type="number" step="0.01" id="prodPrice" class="form-control" min="0" required>
+                            <label class="form-label fw-bold">السعر المفرد (د.ع)</label>
+                            <input type="number" step="0.01" id="prodPrice" class="form-control" min="0" placeholder="0" required>
                         </div>
                         <div class="col-12 text-end">
-                            <button type="submit" class="btn btn-success px-4 fw-bold">إضافة للمخزن</button>
+                            <button type="submit" class="btn btn-success px-4 fw-bold">إضافة للمخزن 💾</button>
                         </div>
                     </form>
                 </div>
@@ -160,7 +152,6 @@
                 </div>
             </div>
 
-            <!-- 2. إدارة الجهات والزبائن -->
             <div class="tab-pane fade no-print" id="entitiesZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 bg-white">
                     <h4 class="text-primary mb-3 fw-bold">👥 إضافة جهة جديدة (مورد / عميل)</h4>
@@ -204,7 +195,6 @@
                 </div>
             </div>
 
-            <!-- 3. فواتير الصرف الحالية النشطة -->
             <div class="tab-pane fade no-print" id="invoicesZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 border-primary bg-white">
                     <h4 class="text-primary mb-3 fw-bold">1️⃣ إنشاء فاتورة صرف جديدة</h4>
@@ -233,7 +223,6 @@
                 <div id="invoicesContainer"></div>
             </div>
 
-            <!-- 4. تبويب كشف الحساب والتدقيق -->
             <div class="tab-pane fade no-print" id="statementZone" role="tabpanel">
                 <div class="row">
                     <div class="col-12 col-md-4 mb-4">
@@ -277,12 +266,10 @@
 
         </div>
 
-        <!-- منطقة طباعة الفواتير المستقلة -->
         <div id="invoicePrintArea" class="d-none"></div>
 
     </div>
 
-    <!-- كود المحرك السحابي للفايربيس والمزامنة المزدوجة للفصل بين الفواتير المفتوحة والمؤرشفة -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
@@ -344,7 +331,7 @@
         function startRealtimeSync() {
             const uid = currentUser.uid;
 
-            // 1. مزامنة جرد المخزن المباشر (تعديل لعرض الشركة المصنعة)
+            // 1. مزامنة المخزن للتأكيد على قراءة وعرض حقل الشركة المصنعة
             const qProd = query(collection(db, "products"), where("userId", "==", uid));
             unsubscribeProducts = onSnapshot(qProd, (snapshot) => {
                 let html = '';
@@ -354,13 +341,13 @@
                     const companyName = p.company || 'غير محدد';
                     html += `<tr>
                         <td class="fw-bold text-start">📦 ${p.name}</td>
-                        <td class="text-muted fw-bold">${companyName}</td>
+                        <td class="fw-bold text-muted">${companyName}</td>
                         <td><span class="badge bg-secondary p-2 fs-6">${p.quantity}</span></td>
                         <td>د.ع ${formatMoney(p.price)}</td>
                         <td class="fw-bold text-success">د.ع ${formatMoney(p.quantity * p.price)}</td>
                         <td><button class="btn btn-sm btn-danger fw-bold" onclick="deleteProduct('${docSnap.id}')">❌ حذف</button></td>
                     </tr>`;
-                    selectHtml += `<option value="${docSnap.id}">${p.name} [${companyName}] (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>`;
+                    selectHtml += `<option value="${docSnap.id}">${p.name} [الشركة: ${companyName}] (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>`;
                 });
                 document.getElementById('productsTableBody').innerHTML = html;
                 window.cachedProductsSelect = selectHtml;
@@ -426,9 +413,9 @@
                     inv.items.forEach((item, index) => {
                         const subtotal = item.quantitySpent * item.priceAtTransaction;
                         totalInvoice += subtotal;
-                        const displayComp = item.company ? ` <small class="text-muted">(${item.company})</small>` : '';
+                        const displayComp = item.company ? ` <span class="badge bg-light text-dark border border-secondary fw-normal small">${item.company}</span>` : '';
                         itemsRows += `<tr>
-                            <td class="text-start fw-bold">📦 ${item.productName}${displayComp}</td>
+                            <td class="text-start fw-bold">📦 ${item.productName} ${displayComp}</td>
                             <td><input type="number" id="qty-${invId}-${index}" value="${item.quantitySpent}" class="form-control form-control-sm text-center fw-bold" min="1" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
                             <td><input type="number" id="price-${invId}-${index}" value="${item.priceAtTransaction}" class="form-control form-control-sm text-center" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
                             <td class="fw-bold text-dark">د.ع ${formatMoney(subtotal)}</td>
@@ -457,7 +444,7 @@
                         ${inv.status === 'مفتوحة' ? `<form onsubmit="addItemToInvoice(event, '${invId}')" class="row g-2 align-items-end mb-3 p-2 bg-light rounded"><div class="col-12 col-sm-6"><select id="addProd-${invId}" class="form-select form-select-sm" required>${window.cachedProductsSelect || ''}</select></div><div class="col-8 col-sm-4"><input type="number" id="addQty-${invId}" class="form-control form-control-sm" placeholder="الكمية" min="1" required></div><div class="col-4 col-sm-2"><button type="submit" class="btn btn-sm btn-secondary w-100 fw-bold">➕</button></div></form>` : ''}
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered text-center align-middle mb-0">
-                                <thead class="table-light"><tr><th>اسم المادة (الشركة)</th><th style="width: 100px;">الكمية</th><th style="width: 140px;">السعر</th><th>المجموع</th>${inv.status === 'مفتوحة' ? '<th>إجراء</th>' : ''}</tr></thead>
+                                <thead class="table-light"><tr><th>اسم المادة (الشركة المصنعة)</th><th style="width: 100px;">الكمية</th><th style="width: 140px;">السعر</th><th>المجموع</th>${inv.status === 'مفتوحة' ? '<th>إجراء</th>' : ''}</tr></thead>
                                 <tbody>
                                     ${itemsRows || '<tr><td colspan="5" class="text-muted py-2">لا توجد مواد مدرجة حالياً في هذه الفاتورة.</td></tr>'}
                                     ${totalInvoice > 0 ? `<tr class="table-success fw-bold"><td colspan="3" class="text-end">المجموع الكلي:</td><td colspan="2" class="text-start text-success fs-5">د.ع ${formatMoney(totalInvoice)}</td></tr>` : ''}
@@ -501,7 +488,7 @@
             if (unsubscribeInvoices) unsubscribeInvoices();
         }
 
-        // حفظ حقل الشركة المصنعة سحابياً
+        // حفظ الصنف السحابي مع حقل الشركة المصنعة المخصص
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await addDoc(collection(db, "products"), {
@@ -512,6 +499,7 @@
                 price: floatParse(document.getElementById('prodPrice').value)
             });
             document.getElementById('productForm').reset();
+            alert("تم حفظ المادة الجديدة مع الشركة المصنعة بنجاح! 🎉");
         });
 
         document.getElementById('entityForm').addEventListener('submit', async (e) => {
@@ -563,7 +551,7 @@
             items.push({ 
                 productId: pId, 
                 productName: pData.name, 
-                company: pData.company || '', 
+                company: pData.company || 'غير محدد', 
                 quantitySpent: inputQty, 
                 priceAtTransaction: pData.price 
             });
@@ -615,14 +603,14 @@
             let rows = ''; let total = 0;
             inv.items.forEach((item, index) => {
                 const sub = item.quantitySpent * item.priceAtTransaction; total += sub;
-                const compStr = item.company ? ` (${item.company})` : '';
+                const compStr = item.company ? ` - [${item.company}]` : '';
                 rows += `<tr><td>${index + 1}</td><td style="text-align:right;">📦 ${item.productName}${compStr}</td><td>${item.quantitySpent} قطع</td><td>د.ع ${formatMoney(item.priceAtTransaction)}</td><td class="fw-bold">د.ع ${formatMoney(sub)}</td></tr>`;
             });
             document.getElementById('invoicePrintArea').innerHTML = `
                 <div class="row align-items-center mb-4 border-bottom pb-3"><div class="col-6"><h3>وصل صرف مواد رسمي</h3><p>رقم المستند: #${inv.invoiceId}</p></div><div class="col-6 text-end"><h5>مستند مخزني سحابي</h5></div></div>
                 <p><strong>المستلم:</strong> ${inv.entityName} | <strong>العنوان:</strong> ${inv.address}</p>
                 <p><strong>ملاحظات:</strong> ${inv.notes || 'لا يوجد'}</p>
-                <table class="table table-bordered text-center my-4"><thead class="table-light"><tr><th>تسلل</th><th>اسم الصنف (الشركة)</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead><tbody>${rows}<tr><td colspan="4" class="text-end">المجموع الكلي:</td><td class="text-success fw-bold">د.ع ${formatMoney(total)}</td></tr></tbody></table>
+                <table class="table table-bordered text-center my-4"><thead class="table-light"><tr><th>تسلل</th><th>اسم الصنف (الشركة المصنعة)</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead><tbody>${rows}<tr><td colspan="4" class="text-end">المجموع الكلي:</td><td class="text-success fw-bold">د.ع ${formatMoney(total)}</td></tr></tbody></table>
                 <div class="mt-4 text-center no-print"><button onclick="window.print()" class="btn btn-success px-4 fw-bold">🖨️ بدء الطباعة</button> <button onclick="document.getElementById('invoicePrintArea').classList.add('d-none')" class="btn btn-outline-secondary px-4 fw-bold">🔙 رجوع</button></div>`;
             document.getElementById('invoicePrintArea').classList.remove('d-none');
             window.scrollTo(0, document.body.scrollHeight);
