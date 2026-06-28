@@ -113,20 +113,24 @@
 
         <div class="tab-content" id="mainTabsContent">
             
-            <!-- 1. المخزن -->
+            <!-- 1. المخزن (تم إضافة حقل الشركة المصنعة هنا) -->
             <div class="tab-pane fade show active no-print" id="productsZone" role="tabpanel">
                 <div class="card p-3 p-md-4 shadow-sm mb-4 bg-white">
                     <h4 class="text-success mb-3 fw-bold">➕ إضافة صنف جديد للمخزن</h4>
                     <form id="productForm" class="row g-3">
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-3">
                             <label class="form-label fw-bold">اسم الصنف</label>
                             <input type="text" id="prodName" class="form-control" required>
                         </div>
-                        <div class="col-6 col-md-4">
+                        <div class="col-12 col-md-3">
+                            <label class="form-label fw-bold">الشركة المصنعة</label>
+                            <input type="text" id="prodCompany" class="form-control" placeholder="مثال: توشيبا، سامسونج..." required>
+                        </div>
+                        <div class="col-6 col-md-3">
                             <label class="form-label fw-bold">الكمية / العدد</label>
                             <input type="number" id="prodQty" class="form-control" min="0" required>
                         </div>
-                        <div class="col-6 col-md-4">
+                        <div class="col-6 col-md-3">
                             <label class="form-label fw-bold">السعر (د.ع)</label>
                             <input type="number" step="0.01" id="prodPrice" class="form-control" min="0" required>
                         </div>
@@ -143,6 +147,7 @@
                             <thead>
                                 <tr>
                                     <th>اسم الصنف</th>
+                                    <th>الشركة المصنعة</th>
                                     <th>الكمية المتوفرة</th>
                                     <th>السعر المفرد</th>
                                     <th>إجمالي القيمة</th>
@@ -228,20 +233,16 @@
                 <div id="invoicesContainer"></div>
             </div>
 
-            <!-- 4. تبويب كشف الحساب والتدقيق (الطلب الجديد والمستقل بالكامل) -->
+            <!-- 4. تبويب كشف الحساب والتدقيق -->
             <div class="tab-pane fade no-print" id="statementZone" role="tabpanel">
                 <div class="row">
-                    <!-- القائمة الجانبية لاختيار الزبون -->
                     <div class="col-12 col-md-4 mb-4">
                         <div class="card p-3 shadow-sm bg-white">
                             <h5 class="fw-bold text-success mb-3">👤 اختر الحساب أو الزبون</h5>
-                            <div class="list-group" id="statementEntitiesList" style="max-height: 450px; overflow-y: auto;">
-                                <!-- يتم تحميل قائمة الأسماء هنا برمجياً -->
-                            </div>
+                            <div class="list-group" id="statementEntitiesList" style="max-height: 450px; overflow-y: auto;"></div>
                         </div>
                     </div>
 
-                    <!-- شاشة عرض كشف الحساب التابع للاسم المختار -->
                     <div class="col-12 col-md-8">
                         <div class="card p-3 p-md-4 shadow-sm bg-white border border-success">
                             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-3 pb-2 border-bottom">
@@ -249,7 +250,6 @@
                                 <span id="selectedAccountName" class="badge bg-dark fs-6 p-2">الرجاء اختيار زبون من اليمين 👈</span>
                             </div>
                             
-                            <!-- ملخص مالي للحساب -->
                             <div id="statementSummaryWidget" class="d-none">
                                 <div class="row g-2 mb-4">
                                     <div class="col-6">
@@ -267,7 +267,6 @@
                                 </div>
                             </div>
 
-                            <!-- منطقة عرض فواتير الزبون المختار -->
                             <div id="accountStatementContainer">
                                 <div class="alert alert-secondary text-center py-4">انقر على اسم الزبون أو الجهة من القائمة الجانبية لعرض كشف حسابه الكامل وأرشيف فواتيره السابقة بدقة وسرعة.</div>
                             </div>
@@ -325,7 +324,6 @@
             }
         });
 
-        // دوال الحسابات والدخول الصريحة
         document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
             try { await signInWithPopup(auth, googleProvider); } catch (err) { alert("خطأ جوجل: " + err.message); }
         });
@@ -343,32 +341,33 @@
         });
         document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
 
-        // دالة المزامنة الحية والربط البرمجي الكامل لحل المشاكل الفهرسية والبطء
         function startRealtimeSync() {
             const uid = currentUser.uid;
 
-            // 1. مزامنة جرد المخزن المباشر
+            // 1. مزامنة جرد المخزن المباشر (تعديل لعرض الشركة المصنعة)
             const qProd = query(collection(db, "products"), where("userId", "==", uid));
             unsubscribeProducts = onSnapshot(qProd, (snapshot) => {
                 let html = '';
                 let selectHtml = '<option value="" disabled selected>-- اختر مادة من المخزن --</option>';
                 snapshot.forEach(docSnap => {
                     const p = docSnap.data();
+                    const companyName = p.company || 'غير محدد';
                     html += `<tr>
                         <td class="fw-bold text-start">📦 ${p.name}</td>
+                        <td class="text-muted fw-bold">${companyName}</td>
                         <td><span class="badge bg-secondary p-2 fs-6">${p.quantity}</span></td>
                         <td>د.ع ${formatMoney(p.price)}</td>
                         <td class="fw-bold text-success">د.ع ${formatMoney(p.quantity * p.price)}</td>
                         <td><button class="btn btn-sm btn-danger fw-bold" onclick="deleteProduct('${docSnap.id}')">❌ حذف</button></td>
                     </tr>`;
-                    selectHtml += `<option value="${docSnap.id}">${p.name} (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>';`;
+                    selectHtml += `<option value="${docSnap.id}">${p.name} [${companyName}] (المتوفر: ${p.quantity} | د.ع ${formatMoney(p.price)})</option>`;
                 });
                 document.getElementById('productsTableBody').innerHTML = html;
                 window.cachedProductsSelect = selectHtml;
                 renderActiveInvoicesAndStatement(); 
             });
 
-            // 2. مزامنة وإدارة الجهات والزبائن وتوزيعها في شاشة كشف الحساب الجانبية
+            // 2. مزامنة الجهات والزبائن
             const qEnt = query(collection(db, "entities"), where("userId", "==", uid));
             unsubscribeEntities = onSnapshot(qEnt, (snapshot) => {
                 let tableHtml = '';
@@ -379,7 +378,6 @@
                     const e = docSnap.data();
                     const safeName = e.name.replace(/'/g, "\\'");
                     
-                    // جدول تبويب "إدارة الجهات"
                     tableHtml += `<tr>
                         <td class="fw-bold text-start">👤 ${e.name}</td>
                         <td>${e.phone}</td>
@@ -387,10 +385,8 @@
                         <td><button class="btn btn-sm btn-danger py-0 fw-bold" onclick="deleteEntity('${docSnap.id}')">❌ حذف</button></td>
                     </tr>`;
                     
-                    // خيارات الاختيار عند عمل فاتورة صرف جديدة
                     selectOptions += `<option value="${docSnap.id}">${e.name} (${e.type})</option>`;
                     
-                    // القائمة الجانبية لتبويب "كشوفات الحسابات والتدقيق" الجديد
                     const activeClass = (activeEntityNameForStatement === e.name) ? 'active bg-success text-white' : '';
                     sidebarGroupHtml += `<button type="button" class="list-group-item list-group-item-action fw-bold d-flex justify-content-between align-items-center ${activeClass}" onclick="loadAccountStatement('${safeName}')">
                         <span>👤 ${e.name}</span>
@@ -403,20 +399,19 @@
                 document.getElementById('statementEntitiesList').innerHTML = sidebarGroupHtml || '<div class="text-muted text-center p-2 small">لا توجد أسماء مسجلة. قم بإضافة جهة من التبويب الخاص بها أولاً.</div>';
             });
 
-            // 3. مزامنة وجلب كافة الفواتير سحابياً وترتيبها برمجياً
+            // 3. مزامنة الفواتير سحابياً
             const qInv = query(collection(db, "invoices"), where("userId", "==", uid));
             unsubscribeInvoices = onSnapshot(qInv, (snapshot) => {
                 globalInvoicesList = [];
                 snapshot.forEach(docSnap => {
                     globalInvoicesList.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                // الترتيب البرمجي الثابت لحل مشكلة الفهارس بالكامل
                 globalInvoicesList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                 renderActiveInvoicesAndStatement();
             });
         }
 
-        // المحرك الرئيسي والذكي لفصل وعرض الفواتير الجارية عن كشوفات حساب الزبائن
+        // المحرك الرئيسي لفصل وعرض الفواتير الجارية عن كشوفات حساب الزبائن
         function renderActiveInvoicesAndStatement() {
             let activeInvoicesHtml = '';
             let statementHtml = '';
@@ -431,8 +426,9 @@
                     inv.items.forEach((item, index) => {
                         const subtotal = item.quantitySpent * item.priceAtTransaction;
                         totalInvoice += subtotal;
+                        const displayComp = item.company ? ` <small class="text-muted">(${item.company})</small>` : '';
                         itemsRows += `<tr>
-                            <td class="text-start fw-bold">📦 ${item.productName}</td>
+                            <td class="text-start fw-bold">📦 ${item.productName}${displayComp}</td>
                             <td><input type="number" id="qty-${invId}-${index}" value="${item.quantitySpent}" class="form-control form-control-sm text-center fw-bold" min="1" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
                             <td><input type="number" id="price-${invId}-${index}" value="${item.priceAtTransaction}" class="form-control form-control-sm text-center" ${inv.status === 'معتمدة' ? 'disabled' : ''}></td>
                             <td class="fw-bold text-dark">د.ع ${formatMoney(subtotal)}</td>
@@ -444,7 +440,6 @@
                     });
                 }
 
-                // هيكلة الكارد المستندي المشترك للفاتورة
                 const invoiceCardHtml = `<div class="card mb-4 border border-secondary bg-white">
                     <div class="card-header bg-dark text-white d-flex flex-column flex-sm-row justify-content-between align-items-sm-center p-3">
                         <div class="fs-6"><strong>رقم المستند: #${inv.invoiceId}</strong> | <span class="fw-bold">الجهة: ${inv.entityName}</span></div>
@@ -462,7 +457,7 @@
                         ${inv.status === 'مفتوحة' ? `<form onsubmit="addItemToInvoice(event, '${invId}')" class="row g-2 align-items-end mb-3 p-2 bg-light rounded"><div class="col-12 col-sm-6"><select id="addProd-${invId}" class="form-select form-select-sm" required>${window.cachedProductsSelect || ''}</select></div><div class="col-8 col-sm-4"><input type="number" id="addQty-${invId}" class="form-control form-control-sm" placeholder="الكمية" min="1" required></div><div class="col-4 col-sm-2"><button type="submit" class="btn btn-sm btn-secondary w-100 fw-bold">➕</button></div></form>` : ''}
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered text-center align-middle mb-0">
-                                <thead class="table-light"><tr><th>اسم المادة</th><th style="width: 100px;">الكمية</th><th style="width: 140px;">السعر</th><th>المجموع</th>${inv.status === 'مفتوحة' ? '<th>إجراء</th>' : ''}</tr></thead>
+                                <thead class="table-light"><tr><th>اسم المادة (الشركة)</th><th style="width: 100px;">الكمية</th><th style="width: 140px;">السعر</th><th>المجموع</th>${inv.status === 'مفتوحة' ? '<th>إجراء</th>' : ''}</tr></thead>
                                 <tbody>
                                     ${itemsRows || '<tr><td colspan="5" class="text-muted py-2">لا توجد مواد مدرجة حالياً في هذه الفاتورة.</td></tr>'}
                                     ${totalInvoice > 0 ? `<tr class="table-success fw-bold"><td colspan="3" class="text-end">المجموع الكلي:</td><td colspan="2" class="text-start text-success fs-5">د.ع ${formatMoney(totalInvoice)}</td></tr>` : ''}
@@ -473,20 +468,12 @@
                     </div>
                 </div>`;
 
-                // الفرز الذكي الأول: تبويب "فواتير الصرف الحالية" لا يظهر إلا الفواتير المفتوحة والنشطة فقط للتعبئة الفورية
-                if (inv.status === 'مفتوحة') {
-                    activeInvoicesHtml += invoiceCardHtml;
-                }
-
-                // الفرز الذكي الثاني: كشف الحساب المنفصل يقوم بجلب كل تاريخ وفواتير العميل المختار (سواء مفتوحة أو معتمدة) للتدقيق والتعديل
+                if (inv.status === 'مفتوحة') { activeInvoicesHtml += invoiceCardHtml; }
                 if (activeEntityNameForStatement && inv.entityName.includes(activeEntityNameForStatement)) {
-                    statementHtml += invoiceCardHtml;
-                    totalStatementBalance += totalInvoice;
-                    targetAccountInvoiceCount++;
+                    statementHtml += invoiceCardHtml; totalStatementBalance += totalInvoice; targetAccountInvoiceCount++;
                 }
             });
 
-            // إسقاط البيانات في حقول الواجهات الرسومية للمستخدم
             document.getElementById('invoicesContainer').innerHTML = activeInvoicesHtml || '<div class="alert alert-info text-center fw-bold">لا توجد فواتير مفتوحة قيد العمل حالياً 👆 املأ الحقول وافتح فاتورة جديدة لتبدأ بإضافة المواد إليها.</div>';
             
             if (activeEntityNameForStatement) {
@@ -498,17 +485,12 @@
             }
         }
 
-        // دالة تفعيل كشف حساب العميل وتغيير لونه في القائمة الجانبية
         window.loadAccountStatement = (entityName) => {
             activeEntityNameForStatement = entityName;
-            // تحديث تصميم العناصر النشطة في القائمة
             const items = document.querySelectorAll('#statementEntitiesList button');
             items.forEach(btn => {
-                if(btn.innerText.includes(entityName)) {
-                    btn.classList.add('active', 'bg-success', 'text-white');
-                } else {
-                    btn.classList.remove('active', 'bg-success', 'text-white');
-                }
+                if(btn.innerText.includes(entityName)) { btn.classList.add('active', 'bg-success', 'text-white'); } 
+                else { btn.classList.remove('active', 'bg-success', 'text-white'); }
             });
             renderActiveInvoicesAndStatement();
         };
@@ -519,12 +501,13 @@
             if (unsubscribeInvoices) unsubscribeInvoices();
         }
 
-        // معالجة النماذج والإدخالات
+        // حفظ حقل الشركة المصنعة سحابياً
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await addDoc(collection(db, "products"), {
                 userId: currentUser.uid,
-                name: document.getElementById('prodName').value,
+                name: document.getElementById('prodName').value.trim(),
+                company: document.getElementById('prodCompany').value.trim(),
                 quantity: parseInt(document.getElementById('prodQty').value),
                 price: floatParse(document.getElementById('prodPrice').value)
             });
@@ -547,28 +530,22 @@
             try {
                 const entSelect = document.getElementById('invEntity');
                 if(!entSelect.value) { alert("الرجاء اختيار جهة مستلمة أولاً!"); return; }
-
                 const entityName = entSelect.options[entSelect.selectedIndex].text;
-                const address = document.getElementById('invAddress').value;
-                const notes = document.getElementById('invNotes').value || '';
-
                 await addDoc(collection(db, "invoices"), {
                     userId: currentUser.uid,
                     invoiceId: "INV-" + Date.now().toString().slice(-6),
                     entityName: entityName,
-                    address: address,
-                    notes: notes,
+                    address: document.getElementById('invAddress').value,
+                    notes: document.getElementById('invNotes').value || '',
                     status: "مفتوحة",
                     items: [],
                     createdAt: Date.now()
                 });
-                
                 document.getElementById('invoiceForm').reset();
                 alert("تم فتح الفاتورة بنجاح وثُبتت بالأسفل لتعبئة المواد 💸");
             } catch (err) { alert("خطأ: " + err.message); }
         });
 
-        // عمليات التعديل، المواد، وحذف المستندات بالكامل مع ضبط توازن المخزن السحابي
         window.deleteProduct = async (id) => { if(confirm("حذف الصنف نهائياً؟")) await deleteDoc(doc(db, "products", id)); };
         window.deleteEntity = async (id) => { if (confirm("حذف الجهة نهائياً؟")) { await deleteDoc(doc(db, "entities", id)); activeEntityNameForStatement = null; } };
 
@@ -583,7 +560,13 @@
             await updateDoc(doc(db, "products", pId), { quantity: pData.quantity - inputQty });
             const invSnap = await getDoc(doc(db, "invoices", invId));
             const items = invSnap.data().items || [];
-            items.push({ productId: pId, productName: pData.name, quantitySpent: inputQty, priceAtTransaction: pData.price });
+            items.push({ 
+                productId: pId, 
+                productName: pData.name, 
+                company: pData.company || '', 
+                quantitySpent: inputQty, 
+                priceAtTransaction: pData.price 
+            });
             await updateDoc(doc(db, "invoices", invId), { items: items });
         };
 
@@ -632,13 +615,14 @@
             let rows = ''; let total = 0;
             inv.items.forEach((item, index) => {
                 const sub = item.quantitySpent * item.priceAtTransaction; total += sub;
-                rows += `<tr><td>${index + 1}</td><td style="text-align:right;">📦 ${item.productName}</td><td>${item.quantitySpent} قطع</td><td>د.ع ${formatMoney(item.priceAtTransaction)}</td><td class="fw-bold">د.ع ${formatMoney(sub)}</td></tr>`;
+                const compStr = item.company ? ` (${item.company})` : '';
+                rows += `<tr><td>${index + 1}</td><td style="text-align:right;">📦 ${item.productName}${compStr}</td><td>${item.quantitySpent} قطع</td><td>د.ع ${formatMoney(item.priceAtTransaction)}</td><td class="fw-bold">د.ع ${formatMoney(sub)}</td></tr>`;
             });
             document.getElementById('invoicePrintArea').innerHTML = `
                 <div class="row align-items-center mb-4 border-bottom pb-3"><div class="col-6"><h3>وصل صرف مواد رسمي</h3><p>رقم المستند: #${inv.invoiceId}</p></div><div class="col-6 text-end"><h5>مستند مخزني سحابي</h5></div></div>
                 <p><strong>المستلم:</strong> ${inv.entityName} | <strong>العنوان:</strong> ${inv.address}</p>
                 <p><strong>ملاحظات:</strong> ${inv.notes || 'لا يوجد'}</p>
-                <table class="table table-bordered text-center my-4"><thead class="table-light"><tr><th>تسلل</th><th>اسم الصنف</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead><tbody>${rows}<tr><td colspan="4" class="text-end">المجموع الكلي:</td><td class="text-success fw-bold">د.ع ${formatMoney(total)}</td></tr></tbody></table>
+                <table class="table table-bordered text-center my-4"><thead class="table-light"><tr><th>تسلل</th><th>اسم الصنف (الشركة)</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead><tbody>${rows}<tr><td colspan="4" class="text-end">المجموع الكلي:</td><td class="text-success fw-bold">د.ع ${formatMoney(total)}</td></tr></tbody></table>
                 <div class="mt-4 text-center no-print"><button onclick="window.print()" class="btn btn-success px-4 fw-bold">🖨️ بدء الطباعة</button> <button onclick="document.getElementById('invoicePrintArea').classList.add('d-none')" class="btn btn-outline-secondary px-4 fw-bold">🔙 رجوع</button></div>`;
             document.getElementById('invoicePrintArea').classList.remove('d-none');
             window.scrollTo(0, document.body.scrollHeight);
